@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
@@ -7,6 +7,7 @@ import Fade from '@material-ui/core/Fade';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {removeCurrentNote,editNote} from "../actions/notes";
+import Input from "@material-ui/core/Input";
 
 const useStyles = makeStyles(theme => ({
     modal: {
@@ -22,9 +23,37 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const EditNoteModal = ({ removeCurrentNote,note}) => {
+const EditNoteModal = ({ removeCurrentNote,notes:{isLoading, note}}) => {
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
+    const [noteData,setNoteData] = useStyles({
+        noteTitle: '',
+        noteContent: '',
+        label: null,
+        isCheckList: false,
+        reminder: null
+    });
+
+    useEffect(() => {
+        setNoteData({
+            noteTitle: isLoading || !note.noteTitle ? '': note.noteTitle,
+            noteContent: isLoading || !note.noteContent ? '': note.noteContent,
+            label: isLoading || !note.label ? '': note.label,
+            isCheckList: isLoading || !note.isCheckList ? '': note.isCheckList,
+            reminder: isLoading || !note.reminder ? '': note.reminder
+        },[isLoading])
+    });
+
+    const {
+        noteTitle,
+        noteContent,
+        label,
+        isCheckList,
+        reminder
+    } = noteData;
+
+    const onChange = e =>
+        setNoteData({...noteData, [e.target.name]: e.target.value});
 
     const handleOpen = () => {
         setOpen(true);
@@ -35,10 +64,8 @@ const EditNoteModal = ({ removeCurrentNote,note}) => {
         setOpen(false);
     };
 
-    console.log(note);
     return (
         <div>
-
             <Button variant="contained" onClick={handleOpen}>
                 Edit Note
             </Button>
@@ -57,11 +84,14 @@ const EditNoteModal = ({ removeCurrentNote,note}) => {
             >
                 <Fade in={open}>
                     <div className={classes.paper}>
-                        <h2 contentEditable={true}>{}</h2>
-                        <p contentEditable={true}>
-                            {}
-                        </p>
-                        <p contentEditable={true}>{}</p>
+                        <Input
+                            type="text"
+                            name="noteTitle"
+                            id="noteTitle"
+                            placeholder="Insert the Title"
+                            value={noteTitle}
+                            required
+                        />
                     </div>
                 </Fade>
             </Modal>
@@ -70,13 +100,13 @@ const EditNoteModal = ({ removeCurrentNote,note}) => {
 };
 
 EditNoteModal.propTypes = {
-    note: PropTypes.object.isRequired,
+    notes: PropTypes.object.isRequired,
     removeCurrentNote: PropTypes.func.isRequired
 
 }
 
 const mapStateToProps = state => ({
-    note : state.notes.note
+    notes : state.notes
 })
 
 export default connect(mapStateToProps,{removeCurrentNote})(EditNoteModal);
