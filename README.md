@@ -12,7 +12,7 @@ Tools that I've used to build this app:
 # comprehensive guide (or what it claims to be)
 Here's I'm gonna explain how I went to build this app:
 ## Backend
-##Frontend
+## Frontend
 ## Redux
-##UI 
+## UI 
 ..to finish
