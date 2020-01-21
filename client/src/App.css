@@ -1,0 +1,46 @@
+.form-container{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.row{
+  margin: 5px 0;
+}
+
+.btn{
+  height: 25px;
+  width: 25px;
+  background-color: rgba(47,169,219,0.34);
+}
+
+.big-wrapper{
+  margin-top: 60px;
+}
+
+.notes-container{
+  margin: 10px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.note-container{
+  border: 1px solid black;
+  border-radius: 10px;
+  color: black;
+  flex-basis: 22%;
+  margin: 5px;
+  padding: 10px;
+}
+
+.label{
+  float: right;
+}
+
+.close-btn{
+  float: right;
+}
