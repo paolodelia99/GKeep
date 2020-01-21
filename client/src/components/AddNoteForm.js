@@ -84,7 +84,7 @@ class AddNoteForm extends Component{
 
         const realForm = (
             <form onSubmit={this.onSubmit}>
-                <div className="form-container">
+                <div clasfsName="form-container">
                     <div className="row">
                         <Input
                             type="text"

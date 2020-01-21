@@ -28,23 +28,17 @@ export default function (state = initState,action) {
                 isLoading: false
             };
         case EDIT_NOTE:
-            const {_id} = payload;
             return {
                 ...state,
-                [_id]: {...state[_id],note: payload}
+                notes: state.notes.map(note => note._id === payload._id ?
+                    {...note,
+                        noteTitle: payload.noteTitle,
+                        noteContent: payload.noteContent,
+                        label: payload.label,
+                        reminder: payload.reminder,
+                        isCheckList: payload.isCheckList,
+                    }: note )
             };
-        case SET_CURRENT_NOTE:
-            return {
-                ...state,
-                note: payload,
-                isLoading: false
-            };
-        case REMOVE_CURRENT_NOTE:
-            return {
-                ...state,
-                note: null,
-                isLoading: false
-            }
         case DELETE_NOTE:
             return {
                 ...state,

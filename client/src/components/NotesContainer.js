@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {getLabels} from "../actions/labels";
 import {getNotes} from "../actions/notes";
-import Note from "./Note";
+import Note from "./note/Note";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 class NotesContainer extends Component {

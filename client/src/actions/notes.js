@@ -68,17 +68,3 @@ export const editNote = (id,note) => async dispatch =>{
         console.log(err)
     }
 };
-
-export const setCurrentNote = (note) => dispatch =>{
-        dispatch({
-            type: SET_CURRENT_NOTE,
-            payload: note
-        })
-};
-
-export const removeCurrentNote = () => dispatch => {
-        dispatch({
-            type: REMOVE_CURRENT_NOTE,
-            payload: null
-        })
-}
