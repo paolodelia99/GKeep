@@ -2,7 +2,7 @@ import axios from 'axios';
 import {
     GET_NOTES,
     ADD_NOTE,
-    DELETE_NOTE
+    DELETE_NOTE, EDIT_NOTE, SET_CURRENT_NOTE, REMOVE_CURRENT_NOTE
 } from "./types";
 
 //Get notes
@@ -55,3 +55,30 @@ export const deleteNote = (id) => async dispatch =>{
 };
 
 //Edit note
+export const editNote = (id,note) => async dispatch =>{
+    try{
+        const editedNote = await axios.put(`/api/notes/${id}`,note);
+
+        dispatch({
+            type: EDIT_NOTE,
+            payload: editedNote
+        })
+
+    }catch (err) {//todo: ad gestire gli errori con opportuno reducer
+        console.log(err)
+    }
+};
+
+export const setCurrentNote = (note) => dispatch =>{
+        dispatch({
+            type: SET_CURRENT_NOTE,
+            payload: note
+        })
+};
+
+export const removeCurrentNote = () => dispatch => {
+        dispatch({
+            type: REMOVE_CURRENT_NOTE,
+            payload: null
+        })
+}

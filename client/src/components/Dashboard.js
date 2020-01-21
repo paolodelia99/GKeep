@@ -100,7 +100,7 @@ const DashBoard = ({getLabels, labels: {labels, isLoading} }) => {
     };
 
     return isLoading ? (
-        <CircularProgress color="text.primary" />
+        <CircularProgress color="primary" />
     ):(
         <div className={classes.root}>
             <CssBaseline />
@@ -122,7 +122,7 @@ const DashBoard = ({getLabels, labels: {labels, isLoading} }) => {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap>
-                        <Icon >lightbulb</Icon>  GKeep
+                        <Icon>lightbulb</Icon>  GKeep
                     </Typography>
                 </Toolbar>
             </AppBar>

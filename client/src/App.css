@@ -28,11 +28,15 @@
   justify-content: space-around;
 }
 
+/*NOTE*/
+.big-note-wrapper{
+  flex-basis: 22%;
+}
+
 .note-container{
   border: 1px solid black;
   border-radius: 10px;
   color: black;
-  flex-basis: 22%;
   margin: 5px;
   padding: 10px;
 }
@@ -43,4 +47,10 @@
 
 .close-btn{
   float: right;
+}
+
+.invisible-btn{
+  display: none;
+  width: 0px;
+  height: 0px;
 }

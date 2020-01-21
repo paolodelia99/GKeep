@@ -23,7 +23,7 @@ class NotesContainer extends Component {
                 <Note note={note} key={note._id}/>
         ));
         return isLoading ? (
-            <CircularProgress color="text.primary" />
+            <CircularProgress color="primary" m="auto"/>
         ): (
             <div className="big-wrapper">
                 <AddNoteForm/>
