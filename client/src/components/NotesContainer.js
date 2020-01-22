@@ -16,6 +16,7 @@ const NotesContainer = ({getNotes,notes:{notes, isLoading, activeFilter,currentL
            <Note note={note} key={note._id}/>
     ));
 
+    console.log(notes)
     let filterNotes;
     let filteredNoteList;
     if(currentLabel !== ''  && activeFilter){
@@ -25,8 +26,6 @@ const NotesContainer = ({getNotes,notes:{notes, isLoading, activeFilter,currentL
         )): null
     }else
         filteredNoteList = null;
-
-    console.log(filteredNoteList)
 
     return isLoading ? (
             <CircularProgress color="primary" m="auto"/>

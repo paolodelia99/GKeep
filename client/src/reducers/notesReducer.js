@@ -7,7 +7,6 @@ import {
 
 const initState = {
     notes:[],
-    note: null,
     isLoading: true,
     activeFilter: false,
     currentLabel: '',
@@ -33,14 +32,17 @@ export default function (state = initState,action) {
         case EDIT_NOTE:
             return {
                 ...state,
-                notes: state.notes.map(note => note._id === payload._id ?
-                    {...note,
+                notes: {
+                    ...state.notes,
+                    [payload._id]:{
+                        ...state.notes[payload._id],
                         noteTitle: payload.noteTitle,
                         noteContent: payload.noteContent,
-                        label: payload.label,
                         reminder: payload.reminder,
+                        label: payload.label,
                         isCheckList: payload.isCheckList,
-                    }: note )
+                    }
+                }
             };
         case SET_FILTER_ACTIVE:
             if(payload === 'reminders')

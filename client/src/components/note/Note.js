@@ -38,10 +38,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const Note = ({deleteNote,editNote, note}) => {
+const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [anchorLabMenu, setAnchorLabMenu] = useState(null);
     const [noteData, setNoteData] = useState({
         noteTitle: note.noteTitle,
         noteContent: note.noteContent,
@@ -50,6 +51,8 @@ const Note = ({deleteNote,editNote, note}) => {
         reminder: note.reminder
     });
 
+
+    const firstLabelName = labels[0].labelName;
     const {
         noteTitle,
         noteContent,
@@ -62,18 +65,29 @@ const Note = ({deleteNote,editNote, note}) => {
         setNoteData({...noteData, [e.target.name]:e.target.value})
     };
 
+    const handleClickLabelMenu = e =>{
+        setAnchorLabMenu(e.currentTarget);
+    };
+
+    const handleCloseLabelMenu = e => {
+        console.log(e.target.innerText)
+        if(e.target.innerText !== undefined)
+            setNoteData({...noteData, label: e.target.innerText});
+        setAnchorLabMenu(null);
+    };
+
     const handleClick = event => {
         setAnchorEl(event.currentTarget);
+    };
+
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
     };
 
     const removeNote = () => {
         const {_id} = note;
         deleteNote(_id);
         handleCloseMenu()
-    };
-
-    const handleCloseMenu = () => {
-        setAnchorEl(null);
     };
 
     const handleOpen = () => {
@@ -146,18 +160,49 @@ const Note = ({deleteNote,editNote, note}) => {
                                 <Button>
                                     <Icon>color_lens</Icon>
                                 </Button>
-                                <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                                <Button aria-controls="main-menu" aria-haspopup="true" onClick={handleClick}>
                                     <Icon>more_vert</Icon>
                                 </Button>
                                 <Menu
-                                    id="simple-menu"
+                                    id="main-menu"
                                     anchorEl={anchorEl}
                                     keepMounted
                                     open={Boolean(anchorEl)}
                                     onClose={handleCloseMenu}
                                 >
                                     <MenuItem onClick={removeNote}>Delete Note</MenuItem>
-                                    <MenuItem >Add Labels</MenuItem>
+                                    <MenuItem >
+                                        <Button
+                                            aria-controls="labels-menu"
+                                            aria-haspopup="true"
+                                            onClick={handleClickLabelMenu}>
+                                            Add Labels
+                                        </Button>
+                                    </MenuItem>
+                                    <Menu
+                                        id="labels-menu"
+                                        anchorEl={anchorLabMenu}
+                                        keepMounted
+                                        open={Boolean(anchorLabMenu)}
+                                        onClose={handleCloseLabelMenu}
+                                        PaperProps={{
+                                            style: {
+                                                maxHeight: 48 * 4.5,
+                                                width: 200,
+                                            },
+                                        }}
+                                    >
+                                        {labels.map(label => (
+                                            <MenuItem
+                                                      key={label._id}
+                                                      className="label-item"
+                                                      selected={label.labelName === firstLabelName}
+                                                      onClick={handleCloseLabelMenu}
+                                            >
+                                                {label.labelName}
+                                            </MenuItem>
+                                        ))}
+                                    </Menu>
                                 </Menu>
                                 <Button onClick={handleClose} >Close</Button>
                             </div>
@@ -172,8 +217,13 @@ const Note = ({deleteNote,editNote, note}) => {
 
 Note.propTypes = {
     note: PropTypes.object.isRequired,
+    labels: PropTypes.object.isRequired,
     deleteNote: PropTypes.func.isRequired,
     editNote: PropTypes.func.isRequired
 };
 
-export default connect(null,{editNote,deleteNote})(Note);
+const mapStateToProps = state => ({
+    labels: state.labels
+});
+
+export default connect(mapStateToProps,{editNote,deleteNote})(Note);

@@ -56,12 +56,18 @@ export const deleteNote = (id) => async dispatch =>{
 
 //Edit note
 export const editNote = (id,note) => async dispatch =>{
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
     try{
-        const editedNote = await axios.put(`/api/notes/${id}`,note);
+        const res = await axios.put(`/api/notes/${id}`,note, config);
 
         dispatch({
             type: EDIT_NOTE,
-            payload: editedNote
+            payload: res.data
         })
 
     }catch (err) {//todo: ad gestire gli errori con opportuno reducer
