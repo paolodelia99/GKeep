@@ -1,50 +1,52 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component, Fragment, useEffect} from 'react';
 import AddNoteForm from "./AddNoteForm";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {getLabels} from "../actions/labels";
 import {getNotes} from "../actions/notes";
 import Note from "./note/Note";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import createSpacing from "@material-ui/core/styles/createSpacing";
 
-class NotesContainer extends Component {
+const NotesContainer = ({getNotes,notes:{notes, isLoading, activeFilter,currentLabel}}) =>{
+    useEffect( ()=> {
+        getNotes()
+    },[getNotes]);
 
-    componentDidMount() {
-        this.props.getNotes();
-        this.props.getLabels();
-    }
+    const notesList = notes.map(note => (
+           <Note note={note} key={note._id}/>
+    ));
 
-    render() {
-        const { notes }= this.props.notes;
-        const {isLoading} = this.props.notes;
-        console.log("notecontainer props")
-        console.log(notes);
-        const notesList = notes.map(note => (
-                <Note note={note} key={note._id}/>
-        ));
-        return isLoading ? (
+    let filterNotes;
+    let filteredNoteList;
+    if(currentLabel !== ''  && activeFilter){
+        filterNotes = notes.filter(note => note.label === currentLabel)
+        filteredNoteList = filterNotes.length ?filterNotes.map(note => (
+            <Note note={note} key={note._id}/>
+        )): null
+    }else
+        filteredNoteList = null;
+
+    console.log(filteredNoteList)
+
+    return isLoading ? (
             <CircularProgress color="primary" m="auto"/>
-        ): (
+    ): (
             <div className="big-wrapper">
                 <AddNoteForm/>
                 <div className="notes-container">
-                    {notesList}
+                    {activeFilter ? filteredNoteList : notesList}
                 </div>
             </div>
-        );
-    }
+    );
 }
 
 NotesContainer.protoTypes ={
     notes: PropTypes.object.isRequired,
-    labels: PropTypes.object.isRequired,
-    getLabels: PropTypes.func.isRequired,
     getNotes: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state =>({
-    notes: state.notes,
-    labels: state.labels
+    notes: state.notes
 });
 
-export default connect(mapStateToProps,{getNotes,getLabels})(NotesContainer);
+export default connect(mapStateToProps,{getNotes})(NotesContainer);

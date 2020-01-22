@@ -2,7 +2,7 @@ import axios from 'axios';
 import {
     GET_NOTES,
     ADD_NOTE,
-    DELETE_NOTE, EDIT_NOTE, SET_CURRENT_NOTE, REMOVE_CURRENT_NOTE
+    DELETE_NOTE, EDIT_NOTE, SET_CURRENT_NOTE, REMOVE_CURRENT_NOTE, SET_FILTER_ACTIVE, SET_FILTER_UNACTIVE
 } from "./types";
 
 //Get notes
@@ -68,3 +68,17 @@ export const editNote = (id,note) => async dispatch =>{
         console.log(err)
     }
 };
+
+//set active filter
+export const setFilterActive = (label) => dispatch => {
+    dispatch({
+        type: SET_FILTER_ACTIVE,
+        payload: label
+    })
+};
+
+export const setFilterUnActive = () => dispatch => {
+    dispatch({
+        type: SET_FILTER_UNACTIVE
+    })
+}

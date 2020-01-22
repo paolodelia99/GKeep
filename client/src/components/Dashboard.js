@@ -18,9 +18,11 @@ import ListItemText from '@material-ui/core/ListItemText';
 import NotesContainer from './NotesContainer';
 import Icon from "@material-ui/core/Icon";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import {Button} from "@material-ui/core";
 
 import {connect} from 'react-redux';
 import {getLabels} from "../actions/labels";
+import { setFilterActive, setFilterUnActive} from "../actions/notes";
 import PropTypes from 'prop-types'
 
 const drawerWidth = 240;
@@ -82,7 +84,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const DashBoard = ({getLabels, labels: {labels, isLoading} }) => {
+const DashBoard = ({getLabels,setFilterActive,setFilterUnActive, labels: {labels, isLoading} }) => {
     useEffect(()=> {
         getLabels();
     },[getLabels]);
@@ -98,6 +100,14 @@ const DashBoard = ({getLabels, labels: {labels, isLoading} }) => {
     const handleDrawerClose = () => {
         setOpen(false);
     };
+
+    const setFilter = (labelName) => {
+        setFilterActive(labelName)
+    };
+
+    const unSetFilter = ()=>{
+        setFilterUnActive();
+    }
 
     return isLoading ? (
         <CircularProgress color="primary" />
@@ -142,11 +152,11 @@ const DashBoard = ({getLabels, labels: {labels, isLoading} }) => {
                 </div>
                 <Divider />
                 <List>
-                    <ListItem button>
+                    <ListItem button onClick={unSetFilter}>
                         <ListItemIcon><Icon>lightbulb</Icon></ListItemIcon>
                         <ListItemText primary="Notes" />
                     </ListItem>
-                    <ListItem button>
+                    <ListItem button onClick={ e => setFilter('reminders')}>
                         <ListItemIcon><Icon>notifications_none</Icon></ListItemIcon>
                         <ListItemText primary="Reminders" />
                     </ListItem>
@@ -154,7 +164,7 @@ const DashBoard = ({getLabels, labels: {labels, isLoading} }) => {
                 <Divider />
                 <List>
                     {labels.map(label => (
-                        <ListItem button key={label._id}>
+                        <ListItem button key={label._id} onClick={ e => setFilter(label.labelName)}>
                             <ListItemIcon><Icon>label</Icon></ListItemIcon>
                             <ListItemText primary={label.labelName}/>
                         </ListItem>
@@ -174,8 +184,10 @@ const DashBoard = ({getLabels, labels: {labels, isLoading} }) => {
 
 DashBoard.protoTypes = {
     getLabels: PropTypes.func.isRequired,
-    labels: PropTypes.object.isRequired
-}
+    labels: PropTypes.object.isRequired,
+    setFilterUnActive: PropTypes.func.isRequired,
+    setFilterActive: PropTypes.func.isRequired
+};
 
 const mapStateToProps = state => ({
     labels: state.labels
@@ -183,5 +195,9 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    {getLabels}
+    {
+        getLabels,
+        setFilterUnActive,
+        setFilterActive
+    }
 )(DashBoard);
