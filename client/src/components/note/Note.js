@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
+const Note = ({deleteNote,editNote,props, note, labels:{labels}}) => {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -50,7 +50,6 @@ const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
         isCheckList: note.isCheckList,
         reminder: note.reminder
     });
-
 
     const firstLabelName = labels[0].labelName;
     const {
@@ -96,6 +95,7 @@ const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
 
     const handleClose = () => {
         const {_id} = note;
+        console.log(_id)
         console.log(noteData);
         editNote(_id,noteData);
         setOpen(false);

@@ -70,8 +70,6 @@ router.put('/:id', async (req,res)=>{
         label,
         reminder
     } = req.body;
-    /*fixme da rivedere: il problema sta nell useFindAndModify che dovrebbe essere vero,
-        ma se passo sempre almeno il titolo e il contenuto non dovrebbe essere un problema*/
 
     const noteFields = {};
     if(noteTitle) noteFields.noteTitle = noteTitle;
@@ -81,7 +79,7 @@ router.put('/:id', async (req,res)=>{
     if(reminder) noteFields.reminder = reminder;
 
     try{
-        let editedNote = await Note.findOneAndUpdate(req.params.id,{$set: noteFields},{new: true ,upsert: false, useFindAndModify:false });
+        let editedNote = await Note.findByIdAndUpdate(req.params.id,{$set: noteFields},{new: true ,upsert: false, useFindAndModify:false });
 
         res.json(editedNote);
     }catch (err) {

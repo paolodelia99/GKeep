@@ -32,17 +32,15 @@ export default function (state = initState,action) {
         case EDIT_NOTE:
             return {
                 ...state,
-                notes: {
-                    ...state.notes,
-                    [payload._id]:{
-                        ...state.notes[payload._id],
+                notes: state.notes.map(note => note._id === payload._id ?
+                    {
+                        ...note,
                         noteTitle: payload.noteTitle,
                         noteContent: payload.noteContent,
-                        reminder: payload.reminder,
                         label: payload.label,
-                        isCheckList: payload.isCheckList,
-                    }
-                }
+                        reminder: payload.reminder,
+                        isCheckList: payload.isCheckList
+                    }: note)
             };
         case SET_FILTER_ACTIVE:
             if(payload === 'reminders')
