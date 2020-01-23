@@ -32,7 +32,7 @@ const NotesContainer = ({getNotes,notes:{notes, isLoading, activeFilter,currentL
         filteredNoteList = null;
 
     return isLoading ? (
-            <CircularProgress color="primary" m="auto"/>
+            <CircularProgress color="primary"/>
     ): (
             <div className="big-wrapper">
                 <AddNoteForm/>

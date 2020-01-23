@@ -19,12 +19,16 @@ import ListItemText from '@material-ui/core/ListItemText';
 import NotesContainer from './NotesContainer';
 import Icon from "@material-ui/core/Icon";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import EditLabelModal from './EditLabelModal';
 
 import {connect} from 'react-redux';
-import {getLabels, addLabel} from "../actions/labels";
+import {getLabels, addLabel, deleteLabel} from "../actions/labels";
 import { setFilterActive, setFilterUnActive} from "../actions/notes";
 import PropTypes from 'prop-types'
 import TextField from "@material-ui/core/TextField";
+import Backdrop from "@material-ui/core/Backdrop";
+import Fade from "@material-ui/core/Fade";
+import Modal from "@material-ui/core/Modal";
 
 const drawerWidth = 240;
 
@@ -83,9 +87,20 @@ const useStyles = makeStyles(theme => ({
         }),
         marginLeft: 0,
     },
+    modal: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    paper: {
+        backgroundColor: theme.palette.background.paper,
+        border: '2px solid #000',
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(2, 4, 3),
+    },
 }));
 
-const DashBoard = ({getLabels,addLabel,setFilterActive,setFilterUnActive, labels: {labels, isLoading} }) => {
+const DashBoard = ({getLabels,addLabel,deleteLabel,setFilterActive,setFilterUnActive, labels: {labels, isLoading} }) => {
     useEffect(()=> {
         getLabels();
     },[getLabels]);
@@ -95,6 +110,7 @@ const DashBoard = ({getLabels,addLabel,setFilterActive,setFilterUnActive, labels
     const [open, setOpen] = useState(false);
     const [anchorMenuAddLabel, setAnchorMenuAddLabel] = useState(null);
     const [labelName, setNewLabelName] = useState('');
+    const [openEditLab, setEditLab] = useState(false);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -126,6 +142,20 @@ const DashBoard = ({getLabels,addLabel,setFilterActive,setFilterUnActive, labels
             setNewLabelName('');
         setAnchorMenuAddLabel(null)
     };
+
+    const setOpenEditModal = () => {
+        setEditLab(true)
+    };
+
+    const setCloseEditModal = () => {
+        setEditLab(false)
+    };
+
+    const deleteSelectedLabel = id => {
+        deleteLabel(id);
+        setCloseEditModal();
+    }
+
 
     return isLoading ? (
         <CircularProgress color="primary" />
@@ -234,6 +264,37 @@ const DashBoard = ({getLabels,addLabel,setFilterActive,setFilterUnActive, labels
                             </Grid>
                         </Grid>
                     </Menu>
+                    <ListItem button onClick={setOpenEditModal}>
+                        <ListItemIcon >
+                            <Icon>create</Icon>
+                        </ListItemIcon>
+                        <ListItemText primary="Edit Labels"/>
+                    </ListItem>
+                    <Modal
+                        aria-labelledby="transition-modal-title"
+                        aria-describedby="transition-modal-description"
+                        className={classes.modal}
+                        open={openEditLab}
+                        onClose={setCloseEditModal}
+                        closeAfterTransition
+                        BackdropComponent={Backdrop}
+                        BackdropProps={{
+                            timeout: 500,
+                        }}
+                    >
+                        <Fade in={openEditLab}>
+                            <div className={classes.paper}>
+                                <List>
+                                    {labels.map(label => (
+                                        <ListItem key={label._id} button onClick={ e => deleteSelectedLabel(label._id)}>
+                                            <ListItemIcon><Icon>delete</Icon></ListItemIcon>
+                                            <ListItemText primary={label.labelName}/>
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            </div>
+                        </Fade>
+                    </Modal>
                 </List>
             </Drawer>
             <main
@@ -250,6 +311,7 @@ const DashBoard = ({getLabels,addLabel,setFilterActive,setFilterUnActive, labels
 DashBoard.protoTypes = {
     getLabels: PropTypes.func.isRequired,
     addLabel: PropTypes.func.isRequired,
+    deleteLabel: PropTypes.func.isRequired,
     labels: PropTypes.object.isRequired,
     setFilterUnActive: PropTypes.func.isRequired,
     setFilterActive: PropTypes.func.isRequired
@@ -264,6 +326,7 @@ export default connect(
     {
         getLabels,
         addLabel,
+        deleteLabel,
         setFilterUnActive,
         setFilterActive
     }

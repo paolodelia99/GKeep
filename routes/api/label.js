@@ -21,7 +21,7 @@ router.get('/',async (req,res)=>{
 // @route POST api/labels
 // @desc create a label
 // @access Public
-router.post('/',async (req,res)=>{
+router.put('/', async (req,res)=>{
     try{
         const newLabel = new Label({
             labelName: req.body.labelName

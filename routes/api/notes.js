@@ -35,7 +35,7 @@ router.post('/', async (req,res)=>{
         if(req.body.reminder)
             newNote["reminder"] = req.body.reminder;
 
-        const note = await newNote.save()
+        const note = await newNote.save();
 
         res.json(note);
     }catch (err) {

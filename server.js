@@ -8,9 +8,6 @@ const app = express();
 //Bodyparser Middleware
 app.use(express.json());
 
-//Db config
-const db = process.env.MONGO_URI;
-
 //Connnect to Mongo
 mongoose.connect(process.env.MONGO_URI,{
     useCreateIndex: true,
