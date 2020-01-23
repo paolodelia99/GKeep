@@ -27,7 +27,7 @@ router.post('/',async (req,res)=>{
             labelName: req.body.labelName
         });
 
-        await newLabel.save();
+        const label = await newLabel.save();
 
         res.json(label)
     }catch (err) {

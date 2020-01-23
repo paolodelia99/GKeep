@@ -29,7 +29,7 @@ export const addLabel = (labelName) => async dispatch =>{
     };
 
     try{
-        const res = await axios.post('/api/labels',labelName,config);
+        const res = await axios.post('/api/labels/',labelName,config);
 
         dispatch({
             type: ADD_LABEL,
