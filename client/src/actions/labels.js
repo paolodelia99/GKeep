@@ -20,8 +20,8 @@ export const getLabels = () => async dispatch =>{
     }
 };
 
-//Get notes
-export const addLabel = (label) => async dispatch =>{
+//Add New Label
+export const addLabel = (labelName) => async dispatch =>{
     const config = {
         headers: {
             'Content-Type': 'application/json'
@@ -29,7 +29,7 @@ export const addLabel = (label) => async dispatch =>{
     };
 
     try{
-        const res = await axios.post('/api/notes',label,config);
+        const res = await axios.post('/api/labels',labelName,config);
 
         dispatch({
             type: ADD_LABEL,
@@ -43,7 +43,7 @@ export const addLabel = (label) => async dispatch =>{
 //Get notes
 export const deleteLabel = (id) => async dispatch =>{
     try{
-        await axios.delete(`/api/notes/${id}`);
+        await axios.delete(`/api/labels/${id}`);
 
         dispatch({
             type: DELETE_LABEL,

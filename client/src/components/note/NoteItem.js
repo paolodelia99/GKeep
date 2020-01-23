@@ -1,5 +1,6 @@
 import React from 'react';
-import {Box, CardContent,Typography} from "@material-ui/core";
+import {Box, CardContent,Typography,Grid} from "@material-ui/core";
+import PropTypes from 'prop-types'
 
 const NoteItem = ({note:{_id,noteTitle,noteContent,label,isCheckList,reminder}}) => {
 
@@ -14,12 +15,35 @@ const NoteItem = ({note:{_id,noteTitle,noteContent,label,isCheckList,reminder}})
                         {noteContent}
                     </Typography>
                 </CardContent>
-                <CardContent className="label">
-                    <Typography className="label">{label}</Typography>
-                </CardContent>
+                <Grid
+                    container
+                    alignItems="flex-start"
+                    justify="space-around"
+                >
+                    <Grid item xs={9}>
+                        <CardContent>
+                            <Typography>{reminder === null ? null :displayRightDate(reminder)}</Typography>
+                        </CardContent>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <CardContent className="label">
+                            <Typography>{label}</Typography>
+                        </CardContent>
+                    </Grid>
+                </Grid>
             </Box>
         </div>
     );
+};
+
+const displayRightDate = (date) => {
+    let hourOffSet = -(new Date().getTimezoneOffset())/60;
+    let realHour = parseInt(date.toString().slice(11,14))+hourOffSet;
+    return realHour+date.toString().slice(13,16);
+};
+
+NoteItem.propTypes = {
+    note: PropTypes.object.isRequired
 };
 
 export default NoteItem;

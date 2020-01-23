@@ -9,8 +9,7 @@ const initState = {
     notes:[],
     isLoading: true,
     activeFilter: false,
-    currentLabel: '',
-    filteredNotes: []
+    currentLabel: ''
 };
 
 export default function (state = initState,action) {
@@ -49,14 +48,12 @@ export default function (state = initState,action) {
                     isLoading: false,
                     activeFilter: true,
                     currentLabel: payload,
-                    filteredNotes: createReminderArray(state.notes)
                 };
             return{
                 ...state,
                 isLoading: false,
                 activeFilter: true,
                 currentLabel: payload,
-                filteredNotes: createFilteredArray(payload, state.notes)
             };
         case SET_FILTER_UNACTIVE:
             return {
@@ -75,24 +72,4 @@ export default function (state = initState,action) {
         default:
             return state
     }
-}
-
-const createFilteredArray = (label,initialArray) =>{
-    let filteredArray = new Array();
-
-    for(let i=0;i<initialArray.length;i++)
-        if(initialArray[i].label === label)
-            filteredArray.push(initialArray[i])
-
-    return filteredArray
-};
-
-const createReminderArray = (initialArray) => {
-    let filteredArray = new Array();
-
-    for(let i=0;i<initialArray.length;i++)
-        if(initialArray[i].reminder !== null || initialArray[i].reminder !== undefined)
-            filteredArray.push(initialArray[i])
-
-    return filteredArray;
 }

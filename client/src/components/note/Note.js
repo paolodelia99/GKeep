@@ -6,7 +6,8 @@ import {
     MenuItem,
     CardContent,
     Typography,
-    Icon
+    Icon,
+    Grid
 } from "@material-ui/core";
 import {editNote, deleteNote} from "../../actions/notes";
 import PropTypes from "prop-types";
@@ -18,6 +19,11 @@ import Fade from "@material-ui/core/Fade";
 import Input from "@material-ui/core/Input";
 import {makeStyles} from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
+import DateFnsUtils from '@date-io/date-fns';
+import {
+    DateTimePicker,
+    MuiPickersUtilsProvider
+} from "@material-ui/pickers";
 
 const useStyles = makeStyles(theme => ({
     modal: {
@@ -43,6 +49,7 @@ const Note = ({deleteNote,editNote,props, note, labels:{labels}}) => {
     const [open, setOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [anchorLabMenu, setAnchorLabMenu] = useState(null);
+    const [openPicker,setOpenPicker] = useState(false);
     const [noteData, setNoteData] = useState({
         noteTitle: note.noteTitle,
         noteContent: note.noteContent,
@@ -50,6 +57,7 @@ const Note = ({deleteNote,editNote,props, note, labels:{labels}}) => {
         isCheckList: note.isCheckList,
         reminder: note.reminder
     });
+    const [selectedDate, handleDateChange] = useState(noteData.reminder);
 
     const firstLabelName = labels[0].labelName;
     const {
@@ -69,7 +77,6 @@ const Note = ({deleteNote,editNote,props, note, labels:{labels}}) => {
     };
 
     const handleCloseLabelMenu = e => {
-        console.log(e.target.innerText)
         if(e.target.innerText !== undefined)
             setNoteData({...noteData, label: e.target.innerText});
         setAnchorLabMenu(null);
@@ -89,14 +96,25 @@ const Note = ({deleteNote,editNote,props, note, labels:{labels}}) => {
         handleCloseMenu()
     };
 
+    const handleOpenPicker = () => {
+        setOpenPicker(true);
+    };
+
+    const handleClosePicker = () => {
+        setOpenPicker(false)
+    }
+
     const handleOpen = () => {
         setOpen(true);
     };
 
     const handleClose = () => {
         const {_id} = note;
-        console.log(_id)
-        console.log(noteData);
+        if(selectedDate !== null){
+            console.log(selectedDate)
+            noteData.reminder = selectedDate;
+        }
+        console.log(noteData)
         editNote(_id,noteData);
         setOpen(false);
     };
@@ -150,11 +168,30 @@ const Note = ({deleteNote,editNote,props, note, labels:{labels}}) => {
                                         onChange={e => onChangeFields(e)}
                                         required
                                     />
-                                    <p className="label">{label}</p>
+                                    <Grid
+                                        container
+                                        alignItems="flex-start"
+                                        justify="space-around"
+                                    >
+                                        <Grid item xs={9}>
+                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                <DateTimePicker
+                                                    disabled={true}
+                                                    value={selectedDate}
+                                                    onChange={handleDateChange}
+                                                    open={openPicker}
+                                                    onClose={handleClosePicker}
+                                                />
+                                            </MuiPickersUtilsProvider>
+                                        </Grid>
+                                        <Grid item xs={3}>
+                                            <p className="label">{label}</p>
+                                        </Grid>
+                                    </Grid>
                                 </form>
                             </div>
                             <div>
-                                <Button>
+                                <Button onClick={handleOpenPicker}>
                                     <Icon>add_alert</Icon>
                                 </Button>
                                 <Button>
@@ -171,13 +208,10 @@ const Note = ({deleteNote,editNote,props, note, labels:{labels}}) => {
                                     onClose={handleCloseMenu}
                                 >
                                     <MenuItem onClick={removeNote}>Delete Note</MenuItem>
-                                    <MenuItem >
-                                        <Button
-                                            aria-controls="labels-menu"
-                                            aria-haspopup="true"
-                                            onClick={handleClickLabelMenu}>
-                                            Add Labels
-                                        </Button>
+                                    <MenuItem aria-controls="labels-menu"
+                                              aria-haspopup="true"
+                                              onClick={handleClickLabelMenu} >
+                                        Add Labels
                                     </MenuItem>
                                     <Menu
                                         id="labels-menu"

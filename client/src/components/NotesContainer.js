@@ -20,8 +20,12 @@ const NotesContainer = ({getNotes,notes:{notes, isLoading, activeFilter,currentL
     let filterNotes;
     let filteredNoteList;
     if(currentLabel !== ''  && activeFilter){
-        filterNotes = notes.filter(note => note.label === currentLabel)
-        filteredNoteList = filterNotes.length ?filterNotes.map(note => (
+        if(currentLabel === 'reminders')
+            filterNotes = notes.filter(note => note.reminder !== null);
+        else
+            filterNotes = notes.filter(note => note.label === currentLabel);
+
+        filteredNoteList = filterNotes.length ? filterNotes.map(note => (
             <Note note={note} key={note._id}/>
         )): null
     }else

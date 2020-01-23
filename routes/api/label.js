@@ -18,8 +18,8 @@ router.get('/',async (req,res)=>{
     }
 });
 
-// @route POST api/notes
-// @desc create a note
+// @route POST api/labels
+// @desc create a label
 // @access Public
 router.post('/',async (req,res)=>{
     try{

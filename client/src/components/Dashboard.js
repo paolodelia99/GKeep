@@ -1,6 +1,7 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import {Menu,Grid,Button} from "@material-ui/core";
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBar from '@material-ui/core/AppBar';
@@ -18,12 +19,12 @@ import ListItemText from '@material-ui/core/ListItemText';
 import NotesContainer from './NotesContainer';
 import Icon from "@material-ui/core/Icon";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {Button} from "@material-ui/core";
 
 import {connect} from 'react-redux';
-import {getLabels} from "../actions/labels";
+import {getLabels, addLabel} from "../actions/labels";
 import { setFilterActive, setFilterUnActive} from "../actions/notes";
 import PropTypes from 'prop-types'
+import TextField from "@material-ui/core/TextField";
 
 const drawerWidth = 240;
 
@@ -84,14 +85,16 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const DashBoard = ({getLabels,setFilterActive,setFilterUnActive, labels: {labels, isLoading} }) => {
+const DashBoard = ({getLabels,addLabel,setFilterActive,setFilterUnActive, labels: {labels, isLoading} }) => {
     useEffect(()=> {
         getLabels();
     },[getLabels]);
 
     const classes = useStyles();
     const theme = useTheme();
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
+    const [anchorMenuAddLabel, setAnchorMenuAddLabel] = useState(null);
+    const [labelName, setNewLabelName] = useState('');
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -107,7 +110,22 @@ const DashBoard = ({getLabels,setFilterActive,setFilterUnActive, labels: {labels
 
     const unSetFilter = ()=>{
         setFilterUnActive();
-    }
+    };
+
+    const addNewLabel = () => {
+        addLabel(labelName);
+        handleCloseAddLabelMenu()
+    };
+
+    const handleOpenAddLabelMenu = e => {
+        setAnchorMenuAddLabel(e.currentTarget)
+    };
+
+    const handleCloseAddLabelMenu = () => {
+        if(labelName !== '')
+            setNewLabelName('');
+        setAnchorMenuAddLabel(null)
+    };
 
     return isLoading ? (
         <CircularProgress color="primary" />
@@ -170,6 +188,53 @@ const DashBoard = ({getLabels,setFilterActive,setFilterUnActive, labels: {labels
                         </ListItem>
                     ))}
                 </List>
+                <Divider/>
+                <List>
+                    <ListItem button onClick={handleOpenAddLabelMenu}>
+                        <ListItemIcon >
+                            <Icon>add</Icon>
+                        </ListItemIcon>
+                        <ListItemText primary="Add new Label"/>
+                    </ListItem>
+                    <Menu
+                        id="add-label-menu"
+                        anchorEl={anchorMenuAddLabel}
+                        keepMounted
+                        open={Boolean(anchorMenuAddLabel)}
+                        onClose={handleCloseAddLabelMenu}
+                        style={{
+                            padding: '3px'
+                        }}
+                    >
+                        <TextField
+                            margin="normal"
+                            autoFocus
+                            type="text"
+                            name="labelName"
+                            id="newLabel-TextField"
+                            value={labelName}
+                            placeholder="The new Label"
+                            onChange={e => setNewLabelName(e.target.value)}
+                            required
+                        />
+                        <Grid
+                            container
+                            alignItems="flex-start"
+                            justify="space-around"
+                        >
+                            <Grid item xs={5}>
+                                <Button onClick={handleCloseAddLabelMenu}>
+                                    Close
+                                </Button>
+                            </Grid>
+                            <Grid item xs={5}>
+                                <Button onClick={addNewLabel}>
+                                    Add Label
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Menu>
+                </List>
             </Drawer>
             <main
                 className={clsx(classes.content, {
@@ -184,6 +249,7 @@ const DashBoard = ({getLabels,setFilterActive,setFilterUnActive, labels: {labels
 
 DashBoard.protoTypes = {
     getLabels: PropTypes.func.isRequired,
+    addLabel: PropTypes.func.isRequired,
     labels: PropTypes.object.isRequired,
     setFilterUnActive: PropTypes.func.isRequired,
     setFilterActive: PropTypes.func.isRequired
@@ -197,6 +263,7 @@ export default connect(
     mapStateToProps,
     {
         getLabels,
+        addLabel,
         setFilterUnActive,
         setFilterActive
     }
