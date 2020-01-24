@@ -5,7 +5,6 @@ import {addNote} from "../actions/notes";
 import Input from "@material-ui/core/Input";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import Icon from "@material-ui/core/Icon";
 import ReactDOM from 'react-dom';
 
 class AddNoteForm extends Component{
@@ -84,7 +83,7 @@ class AddNoteForm extends Component{
 
         const realForm = (
             <form onSubmit={this.onSubmit}>
-                <div classsName="form-container">
+                <div className="form-container">
                     <div className="row">
                         <Input
                             type="text"

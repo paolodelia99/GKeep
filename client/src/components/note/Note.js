@@ -1,14 +1,13 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
     Box,
     Button,
     Menu,
     MenuItem,
-    CardContent,
-    Typography,
     Icon,
     Grid
 } from "@material-ui/core";
+import { green } from '@material-ui/core/colors';
 import {editNote, deleteNote} from "../../actions/notes";
 import PropTypes from "prop-types";
 import { connect } from 'react-redux';
@@ -16,36 +15,20 @@ import NoteItem from "./NoteItem";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import Input from "@material-ui/core/Input";
-import {makeStyles} from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import DateFnsUtils from '@date-io/date-fns';
+import { ThemeProvider } from "@material-ui/styles";
 import {
     DateTimePicker,
     MuiPickersUtilsProvider
 } from "@material-ui/pickers";
 
-const useStyles = makeStyles(theme => ({
-    modal: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    paper: {
-        backgroundColor: theme.palette.background.paper,
-        border: '2px solid #000',
-        boxShadow: theme.shadows[5],
-        padding: theme.spacing(2, 4, 3),
-    },
-    form: {
-        width: '100%', // Fix IE 11 issue.
-        marginTop: theme.spacing(1),
-    }
-}));
+import {noteStyle} from '../styles/noteStyle';
+import {dateTimePickerStyle} from "../styles/dateTimePickerStyle";
 
 
-const Note = ({deleteNote,editNote,props, note, labels:{labels}}) => {
-    const classes = useStyles();
+const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
+    const classes = noteStyle();
     const [open, setOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [anchorLabMenu, setAnchorLabMenu] = useState(null);
@@ -58,6 +41,7 @@ const Note = ({deleteNote,editNote,props, note, labels:{labels}}) => {
         reminder: note.reminder
     });
     const [selectedDate, handleDateChange] = useState(noteData.reminder);
+    const [checkList, setCheckList] = useState(noteData.isCheckList)
 
     const firstLabelName = labels[0].labelName;
     const {
@@ -81,6 +65,11 @@ const Note = ({deleteNote,editNote,props, note, labels:{labels}}) => {
             setNoteData({...noteData, label: e.target.innerText});
         setAnchorLabMenu(null);
     };
+
+    const toggleCheckList = () =>{
+        setCheckList(!checkList)
+        console.log(checkList)
+    }
 
     const handleClick = event => {
         setAnchorEl(event.currentTarget);
@@ -114,6 +103,7 @@ const Note = ({deleteNote,editNote,props, note, labels:{labels}}) => {
             console.log(selectedDate)
             noteData.reminder = selectedDate;
         }
+        noteData.isCheckList = checkList;
         console.log(noteData)
         editNote(_id,noteData);
         setOpen(false);
@@ -122,7 +112,7 @@ const Note = ({deleteNote,editNote,props, note, labels:{labels}}) => {
     return (
         <div className="big-note-wrapper">
             <Box className="note-container">
-                <div onClick={handleOpen}>
+                <div onClick={handleOpen} className={classes.noteItemWrapper}>
                     <NoteItem note={note}/>
                 </div>
 
@@ -174,15 +164,17 @@ const Note = ({deleteNote,editNote,props, note, labels:{labels}}) => {
                                         justify="space-around"
                                     >
                                         <Grid item xs={9}>
-                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                                <DateTimePicker
-                                                    disabled={true}
-                                                    value={selectedDate}
-                                                    onChange={handleDateChange}
-                                                    open={openPicker}
-                                                    onClose={handleClosePicker}
-                                                />
-                                            </MuiPickersUtilsProvider>
+                                            <ThemeProvider theme={dateTimePickerStyle}>
+                                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                    <DateTimePicker
+                                                        disabled={true}
+                                                        value={selectedDate}
+                                                        onChange={handleDateChange}
+                                                        open={openPicker}
+                                                        onClose={handleClosePicker}
+                                                    />
+                                                </MuiPickersUtilsProvider>
+                                            </ThemeProvider>
                                         </Grid>
                                         <Grid item xs={3}>
                                             <p className="label">{label}</p>
@@ -213,6 +205,7 @@ const Note = ({deleteNote,editNote,props, note, labels:{labels}}) => {
                                               onClick={handleClickLabelMenu} >
                                         Add Labels
                                     </MenuItem>
+                                    <MenuItem onClick={toggleCheckList}>Checklist {isCheckList ? <Icon style={{ color: green[500] }} >done</Icon> : <Icon color="secondary">clear</Icon>}</MenuItem>
                                     <Menu
                                         id="labels-menu"
                                         anchorEl={anchorLabMenu}

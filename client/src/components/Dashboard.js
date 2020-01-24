@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import clsx from 'clsx';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import {Menu,Grid,Button} from "@material-ui/core";
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -19,7 +19,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import NotesContainer from './NotesContainer';
 import Icon from "@material-ui/core/Icon";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import EditLabelModal from './EditLabelModal';
 
 import {connect} from 'react-redux';
 import {getLabels, addLabel, deleteLabel} from "../actions/labels";
@@ -29,83 +28,15 @@ import TextField from "@material-ui/core/TextField";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import Modal from "@material-ui/core/Modal";
-
-const drawerWidth = 240;
-
-const useStyles = makeStyles(theme => ({
-    root: {
-        display: 'flex',
-    },
-    appBar: {
-        transition: theme.transitions.create(['margin', 'width'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-    },
-    appBarShift: {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: drawerWidth,
-        transition: theme.transitions.create(['margin', 'width'], {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-        bgcolor: "text.secondary"
-    },
-    menuButton: {
-        marginRight: theme.spacing(2),
-    },
-    hide: {
-        display: 'none',
-    },
-    drawer: {
-        width: drawerWidth,
-        flexShrink: 0,
-    },
-    drawerPaper: {
-        width: drawerWidth,
-    },
-    drawerHeader: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: theme.spacing(0, 1),
-        ...theme.mixins.toolbar,
-        justifyContent: 'flex-end',
-    },
-    content: {
-        flexGrow: 1,
-        padding: theme.spacing(3),
-        transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        marginLeft: -drawerWidth,
-    },
-    contentShift: {
-        transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-        marginLeft: 0,
-    },
-    modal: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    paper: {
-        backgroundColor: theme.palette.background.paper,
-        border: '2px solid #000',
-        boxShadow: theme.shadows[5],
-        padding: theme.spacing(2, 4, 3),
-    },
-}));
+import {dashboardStyle } from './styles/dashboardStyle';
+import {green, yellow} from "@material-ui/core/colors";
 
 const DashBoard = ({getLabels,addLabel,deleteLabel,setFilterActive,setFilterUnActive, labels: {labels, isLoading} }) => {
     useEffect(()=> {
         getLabels();
     },[getLabels]);
 
-    const classes = useStyles();
+    const classes = dashboardStyle();
     const theme = useTheme();
     const [open, setOpen] = useState(false);
     const [anchorMenuAddLabel, setAnchorMenuAddLabel] = useState(null);
@@ -158,7 +89,9 @@ const DashBoard = ({getLabels,addLabel,deleteLabel,setFilterActive,setFilterUnAc
 
 
     return isLoading ? (
-        <CircularProgress color="primary" />
+        <div className="loading-div">
+            <CircularProgress color="primary" className="loading-gif"/>
+        </div>
     ):(
         <div className={classes.root}>
             <CssBaseline />
@@ -180,7 +113,7 @@ const DashBoard = ({getLabels,addLabel,deleteLabel,setFilterActive,setFilterUnAc
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap>
-                        <Icon>lightbulb</Icon>  GKeep
+                        <Icon style={{ color: yellow[700] }}>lightbulb</Icon>  GKeep
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -200,11 +133,11 @@ const DashBoard = ({getLabels,addLabel,deleteLabel,setFilterActive,setFilterUnAc
                 </div>
                 <Divider />
                 <List>
-                    <ListItem button onClick={unSetFilter}>
+                    <ListItem button onClick={unSetFilter} className={classes.sideBarItem}>
                         <ListItemIcon><Icon>lightbulb</Icon></ListItemIcon>
                         <ListItemText primary="Notes" />
                     </ListItem>
-                    <ListItem button onClick={ e => setFilter('reminders')}>
+                    <ListItem button onClick={ e => setFilter('reminders')} className={classes.sideBarItem}>
                         <ListItemIcon><Icon>notifications_none</Icon></ListItemIcon>
                         <ListItemText primary="Reminders" />
                     </ListItem>
@@ -212,7 +145,12 @@ const DashBoard = ({getLabels,addLabel,deleteLabel,setFilterActive,setFilterUnAc
                 <Divider />
                 <List>
                     {labels.map(label => (
-                        <ListItem button key={label._id} onClick={ e => setFilter(label.labelName)}>
+                        <ListItem
+                            button
+                            key={label._id}
+                            onClick={ e => setFilter(label.labelName)}
+                            className={classes.sideBarItem}
+                        >
                             <ListItemIcon><Icon>label</Icon></ListItemIcon>
                             <ListItemText primary={label.labelName}/>
                         </ListItem>
@@ -220,7 +158,7 @@ const DashBoard = ({getLabels,addLabel,deleteLabel,setFilterActive,setFilterUnAc
                 </List>
                 <Divider/>
                 <List>
-                    <ListItem button onClick={handleOpenAddLabelMenu}>
+                    <ListItem button onClick={handleOpenAddLabelMenu} className={classes.sideBarItem}>
                         <ListItemIcon >
                             <Icon>add</Icon>
                         </ListItemIcon>
@@ -264,7 +202,7 @@ const DashBoard = ({getLabels,addLabel,deleteLabel,setFilterActive,setFilterUnAc
                             </Grid>
                         </Grid>
                     </Menu>
-                    <ListItem button onClick={setOpenEditModal}>
+                    <ListItem button onClick={setOpenEditModal} className={classes.sideBarItem}>
                         <ListItemIcon >
                             <Icon>create</Icon>
                         </ListItemIcon>

@@ -1,11 +1,11 @@
-import React, {Component, Fragment, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import AddNoteForm from "./AddNoteForm";
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {getNotes} from "../actions/notes";
 import Note from "./note/Note";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import createSpacing from "@material-ui/core/styles/createSpacing";
+import {Grid} from "@material-ui/core";
 
 const NotesContainer = ({getNotes,notes:{notes, isLoading, activeFilter,currentLabel}}) =>{
     useEffect( ()=> {
@@ -32,10 +32,20 @@ const NotesContainer = ({getNotes,notes:{notes, isLoading, activeFilter,currentL
         filteredNoteList = null;
 
     return isLoading ? (
-            <CircularProgress color="primary"/>
+        <div className="loading-div">
+            <CircularProgress color="primary" className="loading-gif"/>
+        </div>
     ): (
-            <div className="big-wrapper">
-                <AddNoteForm/>
+            <div className="big-notes-wrapper">
+                <Grid container
+                      direction="row"
+                      justify="center"
+                      alignItems="center"
+                      className="big-form-wrapper">
+                    <Grid>
+                        <AddNoteForm/>
+                    </Grid>
+                </Grid>
                 <div className="notes-container">
                     {activeFilter ? filteredNoteList : notesList}
                 </div>

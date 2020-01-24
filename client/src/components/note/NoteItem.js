@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, CardContent,Typography,Grid} from "@material-ui/core";
+import {Box, CardContent,Typography,Grid, List, ListItem,Checkbox} from "@material-ui/core";
 import PropTypes from 'prop-types'
 
 const NoteItem = ({note:{_id,noteTitle,noteContent,label,isCheckList,reminder}}) => {
@@ -11,9 +11,16 @@ const NoteItem = ({note:{_id,noteTitle,noteContent,label,isCheckList,reminder}})
                     <Typography variant="h5" component="h2">
                         {noteTitle}
                     </Typography>
-                    <Typography variant="body2" component="p">
-                        {noteContent}
-                    </Typography>
+                        {isCheckList ? (<List>
+                                {createCheckList(noteContent).map(item => (
+                                <ListItem key={item}>
+                                    <Checkbox disabled value="disabled" inputProps={{ 'aria-label': 'disabled checkbox' }} />
+                                    {" "}{item}</ListItem>
+                                ))}
+                            </List>
+                        ) : (<Typography variant="body2" component="p">
+                            {noteContent}
+                        </Typography>)}
                 </CardContent>
                 <Grid
                     container
@@ -35,6 +42,26 @@ const NoteItem = ({note:{_id,noteTitle,noteContent,label,isCheckList,reminder}})
         </div>
     );
 };
+
+// Slice and Stitch
+const  createCheckList =( str ) => {
+    console.log("metodo")
+    let checkList = new Array()
+    let newstr = "";
+
+    for( var i = 0; i < str.length; i++ ){
+        if( !(str[i] == '\n' || str[i] == '\r') )
+            newstr += str[i];
+        else {
+            checkList.push(newstr);
+            newstr = "";
+        }
+    }
+
+    checkList.push(newstr);
+
+    return checkList;
+}
 
 const displayRightDate = (date) => {
     let hourOffSet = -(new Date().getTimezoneOffset())/60;

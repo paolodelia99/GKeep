@@ -79,7 +79,14 @@ router.put('/:id', async (req,res)=>{
     if(reminder) noteFields.reminder = reminder;
 
     try{
-        let editedNote = await Note.findByIdAndUpdate(req.params.id,{$set: noteFields},{new: true ,upsert: false, useFindAndModify:false });
+        let editedNote = await Note.findByIdAndUpdate(req.params.id,
+            {$set: {"noteTitle":noteTitle,
+                           "noteContent":noteContent,
+                           "isCheckList":isCheckList,
+                            "label":label,
+                            "reminder":reminder}
+                            },
+            {new: true ,upsert: false, useFindAndModify:false });
 
         res.json(editedNote);
     }catch (err) {
