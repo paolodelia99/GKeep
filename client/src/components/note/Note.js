@@ -25,13 +25,14 @@ import {
 
 import {noteStyle} from '../styles/noteStyle';
 import {dateTimePickerStyle} from "../styles/dateTimePickerStyle";
+import NoteMenu from "../NoteMenu";
 
 
 const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
     const classes = noteStyle();
     const [open, setOpen] = useState(false);
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [anchorLabMenu, setAnchorLabMenu] = useState(null);
+    // const [anchorEl, setAnchorEl] = useState(null);
+    // const [anchorLabMenu, setAnchorLabMenu] = useState(null);
     const [openPicker,setOpenPicker] = useState(false);
     const [noteData, setNoteData] = useState({
         noteTitle: note.noteTitle,
@@ -43,7 +44,6 @@ const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
     const [selectedDate, handleDateChange] = useState(noteData.reminder);
     const [checkList, setCheckList] = useState(noteData.isCheckList)
 
-    const firstLabelName = labels[0].labelName;
     const {
         noteTitle,
         noteContent,
@@ -56,33 +56,18 @@ const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
         setNoteData({...noteData, [e.target.name]:e.target.value})
     };
 
-    const handleClickLabelMenu = e =>{
-        setAnchorLabMenu(e.currentTarget);
-    };
-
-    const handleCloseLabelMenu = e => {
-        if(e.target.innerText !== undefined)
-            setNoteData({...noteData, label: e.target.innerText});
-        setAnchorLabMenu(null);
+    const setLabel = (label) => {
+        setNoteData({...noteData,label:label})
     };
 
     const toggleCheckList = () =>{
         setCheckList(!checkList)
         console.log(checkList)
-    }
-
-    const handleClick = event => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleCloseMenu = () => {
-        setAnchorEl(null);
     };
 
     const removeNote = () => {
         const {_id} = note;
         deleteNote(_id);
-        handleCloseMenu()
     };
 
     const handleOpenPicker = () => {
@@ -189,55 +174,20 @@ const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
                                 <Button>
                                     <Icon>color_lens</Icon>
                                 </Button>
-                                <Button aria-controls="main-menu" aria-haspopup="true" onClick={handleClick}>
-                                    <Icon>more_vert</Icon>
-                                </Button>
-                                <Menu
-                                    id="main-menu"
-                                    anchorEl={anchorEl}
-                                    keepMounted
-                                    open={Boolean(anchorEl)}
-                                    onClose={handleCloseMenu}
-                                >
-                                    <MenuItem onClick={removeNote}>Delete Note</MenuItem>
-                                    <MenuItem aria-controls="labels-menu"
-                                              aria-haspopup="true"
-                                              onClick={handleClickLabelMenu} >
-                                        Add Labels
-                                    </MenuItem>
-                                    <MenuItem onClick={toggleCheckList}>Checklist {isCheckList ? <Icon style={{ color: green[500] }} >done</Icon> : <Icon color="secondary">clear</Icon>}</MenuItem>
-                                    <Menu
-                                        id="labels-menu"
-                                        anchorEl={anchorLabMenu}
-                                        keepMounted
-                                        open={Boolean(anchorLabMenu)}
-                                        onClose={handleCloseLabelMenu}
-                                        PaperProps={{
-                                            style: {
-                                                maxHeight: 48 * 4.5,
-                                                width: 200,
-                                            },
-                                        }}
-                                    >
-                                        {labels.map(label => (
-                                            <MenuItem
-                                                      key={label._id}
-                                                      className="label-item"
-                                                      selected={label.labelName === firstLabelName}
-                                                      onClick={handleCloseLabelMenu}
-                                            >
-                                                {label.labelName}
-                                            </MenuItem>
-                                        ))}
-                                    </Menu>
-                                </Menu>
+                                <NoteMenu
+                                    isNewNote={false}
+                                    setLabel={setLabel}
+                                    removeNote={removeNote}
+                                    labels={labels}
+                                    toggleCheckList={toggleCheckList}
+                                    isCheckList={isCheckList}
+                                />
                                 <Button onClick={handleClose} >Close</Button>
                             </div>
                         </div>
                     </Fade>
                 </Modal>
             </Box>
-
         </div>
     );
 };

@@ -6,13 +6,27 @@ import Input from "@material-ui/core/Input";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import ReactDOM from 'react-dom';
+import {Icon} from "@material-ui/core";
+import {dateTimePickerStyle} from './styles/dateTimePickerStyle'
+import {DateTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
+import {ThemeProvider} from "@material-ui/styles";
+import NoteMenu from "./NoteMenu";
+import Grid from "@material-ui/core/Grid";
+import CardContent from "@material-ui/core/CardContent";
+import Typography from "@material-ui/core/Typography";
 
 class AddNoteForm extends Component{
     state = {
         noteTitle: '',
         noteContent: '',
         isCheckList: false,
-        isClicked: false
+        label: '',
+        reminder: null,
+        isClicked: false,
+        isPickerOpen: false,
+        selectedDate: null,
+        isMenuOpen: false
     }
 
     onChange = e =>{
@@ -27,7 +41,9 @@ class AddNoteForm extends Component{
         const newNote = {
             noteTitle: this.state.noteTitle,
             noteContent: this.state.noteContent,
-            isCheckList: this.state.isCheckList
+            label: this.state.label,
+            isCheckList: this.state.isCheckList,
+            reminder: this.state.selectedDate
         }
 
         this.props.addNote(newNote);
@@ -46,6 +62,42 @@ class AddNoteForm extends Component{
          })
      };
 
+    handleOpenPicker = () =>{
+        this.setState({
+            isPickerOpen: true
+        })
+    };
+
+    handleClosePicker = () =>{
+        this.setState({
+            isPickerOpen: false
+        })
+    };
+
+    onChangeDate=  (date) =>{
+        this.setState({
+            selectedDate: date
+        })
+    };
+
+    setLabel = (label) => {
+        this.setState({
+            label: label
+        })
+    };
+
+    setCheckList = () =>{
+        this.setState({
+            isCheckList: !this.state.isCheckList
+        })
+    };
+
+    toggleMenu = (isOpen) =>{
+        this.setState({
+            isMenuOpen: isOpen
+        })
+    }
+
     componentDidMount() {
         document.addEventListener('click', this.handleClickOutside, true);
     }
@@ -57,12 +109,12 @@ class AddNoteForm extends Component{
     handleClickOutside = event => {
         const domNode = ReactDOM.findDOMNode(this);
 
-        if (!domNode || !domNode.contains(event.target)) {
+        if ((!domNode || !domNode.contains(event.target)) && !this.state.isPickerOpen && !this.state.isMenuOpen) {
             this.setState({
                 isClicked: false
             });
         }
-    }
+    };
 
     render() {
         const isClicked = this.state.isClicked
@@ -80,6 +132,8 @@ class AddNoteForm extends Component{
                 </div>
             </form>
         );
+
+        const {labels} = this.props.labels;
 
         const realForm = (
             <form onSubmit={this.onSubmit}>
@@ -108,7 +162,49 @@ class AddNoteForm extends Component{
                             required
                         />
                     </div>
-                    <Button variant="outlined" type="submit" value="Submit">Add Note</Button>
+                    <div className="row">
+                        <Grid
+                            container
+                            alignItems="flex-start"
+                            justify="space-around"
+                        >
+                            <Grid item xs={9}>
+                                <ThemeProvider theme={dateTimePickerStyle}>
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                        <DateTimePicker
+                                            disabled={true}
+                                            value={this.state.selectedDate}
+                                            onChange={this.onChangeDate}
+                                            open={this.state.isPickerOpen}
+                                            onClose={this.handleClosePicker}
+                                        />
+                                    </MuiPickersUtilsProvider>
+                                </ThemeProvider>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <CardContent>
+                                    <Typography>{this.state.label ? this.state.label : null}</Typography>
+                                </CardContent>
+                            </Grid>
+                        </Grid>
+                    </div>
+                    <div className="btns-container">
+                        <Button onClick={this.handleOpenPicker}>
+                            <Icon>add_alert</Icon>
+                        </Button>
+                        <Button>
+                            <Icon>color_lens</Icon>
+                        </Button>
+                        <NoteMenu
+                            labels={labels}
+                            isNewNote={true}
+                            setLabel={this.setLabel}
+                            toggleCheckList={this.setCheckList}
+                            isCheckList={this.state.isCheckList}
+                            toggleMenu={this.toggleMenu}
+                        />
+                        <Button variant="outlined" type="submit" value="Submit">Add Note</Button>
+                    </div>
                 </div>
             </form>
         )
@@ -119,7 +215,12 @@ class AddNoteForm extends Component{
 };
 
 AddNoteForm.propTypes = {
-    addNote: PropTypes.func.isRequired
-}
+    addNote: PropTypes.func.isRequired,
+    labels: PropTypes.object.isRequired
+};
 
-export default connect(null,{addNote})(AddNoteForm);
+const mapStateToProps = state => ({
+    labels: state.labels
+});
+
+export default connect(mapStateToProps,{addNote})(AddNoteForm);

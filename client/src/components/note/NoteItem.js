@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import {Box, CardContent,Typography,Grid, List, ListItem,Checkbox} from "@material-ui/core";
 import PropTypes from 'prop-types'
+import Icon from "@material-ui/core/Icon";
 
 const NoteItem = ({note:{_id,noteTitle,noteContent,label,isCheckList,reminder}}) => {
 
@@ -29,13 +30,22 @@ const NoteItem = ({note:{_id,noteTitle,noteContent,label,isCheckList,reminder}})
                 >
                     <Grid item xs={9}>
                         <CardContent>
-                            <Typography>{reminder === null ? null :displayRightDate(reminder)}</Typography>
+                            <Fragment>{reminder === null ? null :(
+                                <div className="time-wrapper">
+                                    <Icon>access_time</Icon>
+                                    <Typography className="time">{"  "}{displayRightDate(reminder)}</Typography>
+                                </div>
+                            )}</Fragment>
                         </CardContent>
                     </Grid>
                     <Grid item xs={3}>
-                        <CardContent className="label">
-                            <Typography>{label}</Typography>
-                        </CardContent>
+                        {label ? (
+                            <CardContent className="label">
+                                <div className="label-container">
+                                    <Typography>{label}</Typography>
+                                </div>
+                            </CardContent>
+                        ): null}
                     </Grid>
                 </Grid>
             </Box>
