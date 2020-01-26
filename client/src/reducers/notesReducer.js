@@ -38,7 +38,8 @@ export default function (state = initState,action) {
                         noteContent: payload.noteContent,
                         label: payload.label,
                         reminder: payload.reminder,
-                        isCheckList: payload.isCheckList
+                        isCheckList: payload.isCheckList,
+                        color: payload.color
                     }: note)
             };
         case SET_FILTER_ACTIVE:

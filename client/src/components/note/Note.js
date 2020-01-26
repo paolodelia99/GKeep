@@ -25,31 +25,33 @@ import {
 
 import {noteStyle} from '../styles/noteStyle';
 import {dateTimePickerStyle} from "../styles/dateTimePickerStyle";
-import NoteMenu from "../NoteMenu";
+import NoteMenu from "./NoteMenu";
+import ColorPicker from "../ColorPicker";
 
 
 const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
     const classes = noteStyle();
     const [open, setOpen] = useState(false);
-    // const [anchorEl, setAnchorEl] = useState(null);
-    // const [anchorLabMenu, setAnchorLabMenu] = useState(null);
     const [openPicker,setOpenPicker] = useState(false);
     const [noteData, setNoteData] = useState({
         noteTitle: note.noteTitle,
         noteContent: note.noteContent,
         label: note.label,
         isCheckList: note.isCheckList,
-        reminder: note.reminder
+        reminder: note.reminder,
+        color: note.color
     });
     const [selectedDate, handleDateChange] = useState(noteData.reminder);
-    const [checkList, setCheckList] = useState(noteData.isCheckList)
+    const [checkList, setCheckList] = useState(noteData.isCheckList);
+    const [bgcolor,setColor] = useState(noteData.color)
 
     const {
         noteTitle,
         noteContent,
         label,
         isCheckList,
-        reminder
+        reminder,
+        color
     } = noteData;
 
     const onChangeFields = e => {
@@ -76,10 +78,14 @@ const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
 
     const handleClosePicker = () => {
         setOpenPicker(false)
-    }
+    };
 
     const handleOpen = () => {
         setOpen(true);
+    };
+
+    const handleColorChange = (color) =>{
+        setColor(color)
     };
 
     const handleClose = () => {
@@ -89,6 +95,7 @@ const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
             noteData.reminder = selectedDate;
         }
         noteData.isCheckList = checkList;
+        noteData.color = bgcolor;
         console.log(noteData)
         editNote(_id,noteData);
         setOpen(false);
@@ -96,7 +103,7 @@ const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
 
     return (
         <div className="big-note-wrapper">
-            <Box className="note-container">
+            <Box className="note-container" style={{background: color}}>
                 <div onClick={handleOpen} className={classes.noteItemWrapper}>
                     <NoteItem note={note}/>
                 </div>
@@ -113,7 +120,7 @@ const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
                         timeout: 500,
                     }}
                 >
-                    <Fade in={open}>
+                    <Fade in={open} style={{background: color}}>
                         <div className={classes.paper}>
                             <div>
                                 <form className={classes.form}>
@@ -171,9 +178,10 @@ const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
                                 <Button onClick={handleOpenPicker}>
                                     <Icon>add_alert</Icon>
                                 </Button>
-                                <Button>
-                                    <Icon>color_lens</Icon>
-                                </Button>
+                                <ColorPicker
+                                    setColor={handleColorChange}
+                                    newNote={false}
+                                />
                                 <NoteMenu
                                     isNewNote={false}
                                     setLabel={setLabel}

@@ -98,8 +98,231 @@ const NoteSchema = new Schema({
 module.exports = Note = mongoose.model('notes',NoteSchema)
 ```
 
-- in the api folder I've made all the apis that I need to have: 
+- in the api folder (inside the routes folder) I've made all the apis that I need to have: 
 
+notes.js
+```
+    const express = require('express');
+    const router = express.Router();
+    
+    const Note = require('../../models/Note');
+    
+    // @route GET api/notes
+    // @desc get All notes
+    // @access Public
+    router.get('/', async (req,res)=>{
+        try{
+            const notes = await Note.find()
+                                  .sort({date:-1});
+    
+            res.json(notes)
+        }catch (err) {
+            console.error(err.message);
+            res.status(500).send('Server Error');
+        }
+    });
+    
+    // @route POST api/notes
+    // @desc create a note
+    // @access Public
+    router.post('/', async (req,res)=>{
+        try{
+            const newNote = new Note({
+                noteTitle: req.body.noteTitle,
+                noteContent: req.body.noteContent,
+                isCheckList: req.body.isCheckList
+            });
+    
+            if(req.body.label)
+                newNote["label"] = req.body.label;
+    
+            if(req.body.reminder)
+                newNote["reminder"] = req.body.reminder;
+    
+            const note = await newNote.save();
+    
+            res.json(note);
+        }catch (err) {
+            console.error(err.message);
+            res.status(500).send('Server Error');
+        }
+    });
+    
+    // @route DELETE api/notes
+    // @desc delete a note
+    // @access Public
+    router.delete('/:id',async (req,res)=>{
+        try{
+            const note = await Note.findById(req.params.id);
+    
+            await note.remove();
+            res.json({success:true})
+        }catch (err) {
+            console.error(err.message);
+            res.status(500).send('Server Error');
+        }
+    });
+    
+    // @route PUT api/notes
+    // @desc edit a note
+    // @access Public
+    router.put('/:id', async (req,res)=>{
+        const {
+            noteTitle,
+            noteContent,
+            isCheckList,
+            label,
+            reminder
+        } = req.body;
+    
+        const noteFields = {};
+        if(noteTitle) noteFields.noteTitle = noteTitle;
+        if(noteContent) noteFields.noteContent = noteContent;
+        if(isCheckList) noteFields.isCheckList = isCheckList;
+        if(label) noteFields.label = label;
+        if(reminder) noteFields.reminder = reminder;
+    
+        try{
+            let editedNote = await Note.findByIdAndUpdate(req.params.id,
+                {$set: {"noteTitle":noteTitle,
+                               "noteContent":noteContent,
+                               "isCheckList":isCheckList,
+                                "label":label,
+                                "reminder":reminder}
+                                },
+                {new: true ,upsert: false, useFindAndModify:false });
+    
+            res.json(editedNote);
+        }catch (err) {
+            console.error(err.message);
+            res.status(500).send('Server Error');
+        }
+    });
+    
+    module.exports = router;
+
+```
+
+label.js
+
+```
+    const express = require('express');
+    const router = express.Router();
+    
+    const Label = require('../../models/Label');
+    
+    // @route GET api/labels
+    // @desc get All the labels
+    // @access Public
+    router.get('/',async (req,res)=>{
+        try{
+            const labels = await Label.find()
+                                .sort({date:-1});
+    
+            res.json(labels)
+        }catch (err) {
+            console.error(err.message);
+            res.status(500).send('Server Error');
+        }
+    });
+    
+    // @route POST api/labels
+    // @desc create a label
+    // @access Public
+    router.put('/', async (req,res)=>{
+        try{
+            const newLabel = new Label({
+                labelName: req.body.labelName
+            });
+    
+            const label = await newLabel.save();
+    
+            res.json(label)
+        }catch (err) {
+            console.error(err.message);
+            res.status(500).send('Server Error');
+        }
+    });
+    
+    // @route DELETE api/labels
+    // @desc delete a label
+    // @access Public
+    router.delete('/:id',async (req,res)=>{
+        try{
+            const label = await Label.findById(req.params.id);
+    
+            await label.remove();
+            res.json({success:true})
+        }catch (err) {
+                console.error(err.message);
+                res.status(500).send('Server Error');
+        }
+    });
+    
+    // @route PUT api/labels
+    // @desc edit a label
+    // @access Public
+    router.put('/:id', async (req,res)=>{
+        const {
+            labelName
+        } = req.body;
+    
+        const labelFields = {};
+        if(labelName) labelFields.labelName = labelName;
+    
+        try{
+            let editedLabel = await Label.findByIdAndUpdate(req.params.id,{$set: labelFields},{ new: true, upsert: true,useFindAndModify:false });
+    
+            res.json(editedLabel);
+        }catch (err) {
+            console.error(err.message);
+            res.status(500).send('Server Error');
+        }
+    });
+    
+    module.exports = router;
+```
+
+- the server.js file 
+
+```
+    const express = require('express');
+    const mongoose = require('mongoose');
+    const path = require('path');
+    require('dotenv').config();
+    
+    const app = express();
+    
+    //Bodyparser Middleware
+    app.use(express.json());
+    
+    //Connnect to Mongo
+    mongoose.connect(process.env.MONGO_URI,{
+        useCreateIndex: true,
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        })
+        .then(()=> console.log('MongoDb Connected..'))
+        .catch(err => console.log(`DB Connection Error: ${err.message}`));
+    
+    //Use Routes
+    app.use('/api/notes',require('./routes/api/notes'));
+    app.use('/api/labels',require('./routes/api/label'));
+    
+    //Server static assets if in production
+    if(process.env.NODE_ENV === 'production'){
+        //Set staic folder
+        app.use(express.static('client/build'))
+    
+        app.get('*',(req,res) =>{
+            res.sendFile(path.resolve(__dirname,'client','build','index.html'))
+        })
+    }
+    
+    const port = process.env.PRT || 5000;
+    
+    app.listen(port, ()=> console.log(`Server Started on port ${port}`));
+```
 
 ## Frontend
 
@@ -119,6 +342,15 @@ For the client folder structure I've done in this way:
 └── src
     ├── actions 
     ├── components
+    │       ├── note
+    │       │    ├── Note.js
+    │       │    ├── NoteItem.js
+    │       │    └── NoteMenu.js
+    │       ├── styles
+    │       ├── AddNoteForm.js
+    │       ├── NoteMenu.js
+    │       ├── NotesContainer.js
+    │       └── DashBoard.js
     ├── reducers
     ├── App.ccs
     ├── App.js
@@ -128,5 +360,6 @@ For the client folder structure I've done in this way:
 ```
 
 ## Redux
+
 ## UI 
 ..to finish

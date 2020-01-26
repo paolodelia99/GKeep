@@ -35,6 +35,9 @@ router.post('/', async (req,res)=>{
         if(req.body.reminder)
             newNote["reminder"] = req.body.reminder;
 
+        if(req.body.color)
+            newNote["color"] = req.body.color;
+
         const note = await newNote.save();
 
         res.json(note);
@@ -68,7 +71,8 @@ router.put('/:id', async (req,res)=>{
         noteContent,
         isCheckList,
         label,
-        reminder
+        reminder,
+        color
     } = req.body;
 
     const noteFields = {};
@@ -77,6 +81,7 @@ router.put('/:id', async (req,res)=>{
     if(isCheckList) noteFields.isCheckList = isCheckList;
     if(label) noteFields.label = label;
     if(reminder) noteFields.reminder = reminder;
+    if(color) noteFields.color = color;
 
     try{
         let editedNote = await Note.findByIdAndUpdate(req.params.id,
@@ -84,7 +89,8 @@ router.put('/:id', async (req,res)=>{
                            "noteContent":noteContent,
                            "isCheckList":isCheckList,
                             "label":label,
-                            "reminder":reminder}
+                            "reminder":reminder,
+                            "color":color}
                             },
             {new: true ,upsert: false, useFindAndModify:false });
 

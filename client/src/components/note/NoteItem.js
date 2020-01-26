@@ -3,7 +3,7 @@ import {Box, CardContent,Typography,Grid, List, ListItem,Checkbox} from "@materi
 import PropTypes from 'prop-types'
 import Icon from "@material-ui/core/Icon";
 
-const NoteItem = ({note:{_id,noteTitle,noteContent,label,isCheckList,reminder}}) => {
+const NoteItem = ({note:{_id,noteTitle,noteContent,label,isCheckList,reminder,color}}) => {
 
     return (
         <div>
@@ -33,7 +33,7 @@ const NoteItem = ({note:{_id,noteTitle,noteContent,label,isCheckList,reminder}})
                             <Fragment>{reminder === null ? null :(
                                 <div className="time-wrapper">
                                     <Icon>access_time</Icon>
-                                    <Typography className="time">{"  "}{displayRightDate(reminder)}</Typography>
+                                    <Typography className="time">{displayRightDate(reminder)}</Typography>
                                 </div>
                             )}</Fragment>
                         </CardContent>

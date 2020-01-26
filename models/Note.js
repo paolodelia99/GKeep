@@ -23,6 +23,11 @@ const NoteSchema = new Schema({
         type: Date,
         default: null,
         required: false
+    },
+    color: {
+        type: String,
+        default: '#fff',
+        required: false
     }
 });
 

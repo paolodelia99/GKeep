@@ -11,10 +11,11 @@ import {dateTimePickerStyle} from './styles/dateTimePickerStyle'
 import {DateTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import {ThemeProvider} from "@material-ui/styles";
-import NoteMenu from "./NoteMenu";
+import NoteMenu from "./note/NoteMenu";
 import Grid from "@material-ui/core/Grid";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
+import ColorPicker from "./ColorPicker";
 
 class AddNoteForm extends Component{
     state = {
@@ -22,11 +23,13 @@ class AddNoteForm extends Component{
         noteContent: '',
         isCheckList: false,
         label: '',
+        color: '#fff',
         reminder: null,
         isClicked: false,
         isPickerOpen: false,
         selectedDate: null,
-        isMenuOpen: false
+        isMenuOpen: false,
+        isColorPickerOpen: false
     }
 
     onChange = e =>{
@@ -43,8 +46,9 @@ class AddNoteForm extends Component{
             noteContent: this.state.noteContent,
             label: this.state.label,
             isCheckList: this.state.isCheckList,
-            reminder: this.state.selectedDate
-        }
+            reminder: this.state.selectedDate,
+            color: this.state.color
+        };
 
         this.props.addNote(newNote);
 
@@ -52,7 +56,9 @@ class AddNoteForm extends Component{
             noteTitle: '',
             noteContent:'',
             isCheckList: false,
-            isClicked: false
+            isClicked: false,
+            reminder: null,
+            color: '#fff'
         })
     };
 
@@ -86,6 +92,12 @@ class AddNoteForm extends Component{
         })
     };
 
+    handleColorChange = (color)=>{
+        this.setState({
+            color: color
+        })
+    };
+
     setCheckList = () =>{
         this.setState({
             isCheckList: !this.state.isCheckList
@@ -95,6 +107,12 @@ class AddNoteForm extends Component{
     toggleMenu = (isOpen) =>{
         this.setState({
             isMenuOpen: isOpen
+        })
+    };
+
+    toggleColorPicker = (isOpen) =>{
+        this.setState({
+            isColorPickerOpen: isOpen
         })
     }
 
@@ -109,7 +127,7 @@ class AddNoteForm extends Component{
     handleClickOutside = event => {
         const domNode = ReactDOM.findDOMNode(this);
 
-        if ((!domNode || !domNode.contains(event.target)) && !this.state.isPickerOpen && !this.state.isMenuOpen) {
+        if ((!domNode || !domNode.contains(event.target)) && !this.state.isPickerOpen && !this.state.isMenuOpen && !this.state.isColorPickerOpen) {
             this.setState({
                 isClicked: false
             });
@@ -137,7 +155,7 @@ class AddNoteForm extends Component{
 
         const realForm = (
             <form onSubmit={this.onSubmit}>
-                <div className="form-container">
+                <div className="form-container" style={{background: this.state.color }}>
                     <div className="row">
                         <Input
                             type="text"
@@ -192,9 +210,11 @@ class AddNoteForm extends Component{
                         <Button onClick={this.handleOpenPicker}>
                             <Icon>add_alert</Icon>
                         </Button>
-                        <Button>
-                            <Icon>color_lens</Icon>
-                        </Button>
+                        <ColorPicker
+                            setColor={this.handleColorChange}
+                            toggleMenu={this.toggleColorPicker}
+                            newNote={true}
+                        />
                         <NoteMenu
                             labels={labels}
                             isNewNote={true}
