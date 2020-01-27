@@ -2,6 +2,42 @@
 
 Since I'm a Productivity guy, here I made a full web app (without auth) that tries to copy and app that I use a lot to keep traking my goal, my ideas, and my thought in general: Google Keep!
 <br/>
+<br/>
+
+Check it out:
+https://damp-fjord-04834.herokuapp.com/
+<br/>
+<br/>
+
+## Quick Start: how to instal it
+
+```bash
+# Install server dependencies
+npm install
+
+# Install client dependencies
+cd client
+npm install
+
+# Run both Express & React from root
+npm run dev
+
+# Build for production
+cd client
+npm run build
+```
+
+```
+# change .env file in config folder
+
+# add uri of your mongodb connection for example
+
+ "mongoURI": "mongodb://localhost/dev-social",
+ 
+```
+
+# App Info
+
 Tools that I've used to build this app:
 - [Mongodb](https://www.mongodb.com/) - as database
 - [React](https://reactjs.org/) - for the front-end
@@ -363,3 +399,12 @@ For the client folder structure I've done in this way:
 
 ## UI 
 ..to finish
+
+### Author
+
+Paolo D'Elia
+[My webSite](http://www.google.com)
+
+### Version
+
+1.0.0
