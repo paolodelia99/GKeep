@@ -2,7 +2,7 @@
   "name": "GKeep-clone",
   "version": "1.0.0",
   "description": "Google Keep Clone",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "client-install": "npm install --prefix client",
     "start": "node server",

@@ -6,13 +6,14 @@ require('dotenv').config();
 const app = express();
 
 //Bodyparser Middleware
-app.use(express.json());
+app.use(express.json({ extended: false }));
 
 //Connnect to Mongo
 mongoose.connect(process.env.MONGO_URI,{
     useCreateIndex: true,
     useNewUrlParser: true,
-    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true
     })
     .then(()=> console.log('MongoDb Connected..'))
     .catch(err => console.log(`DB Connection Error: ${err.message}`));
@@ -31,6 +32,6 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 
-const PORT = process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 
 app.listen(port, ()=> console.log(`Server Started on port ${port}`));
