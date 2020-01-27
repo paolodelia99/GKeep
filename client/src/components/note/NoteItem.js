@@ -55,12 +55,11 @@ const NoteItem = ({note:{_id,noteTitle,noteContent,label,isCheckList,reminder,co
 
 // Slice and Stitch
 const  createCheckList =( str ) => {
-    console.log("metodo")
-    let checkList = new Array()
+    let checkList = [];
     let newstr = "";
 
     for( var i = 0; i < str.length; i++ ){
-        if( !(str[i] == '\n' || str[i] == '\r') )
+        if( !(str[i] === '\n' || str[i] === '\r') )
             newstr += str[i];
         else {
             checkList.push(newstr);

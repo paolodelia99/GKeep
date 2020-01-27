@@ -16,7 +16,6 @@ const NotesContainer = ({getNotes,notes:{notes, isLoading, activeFilter,currentL
            <Note note={note} key={note._id}/>
     ));
 
-    console.log(notes)
     let filterNotes;
     let filteredNoteList;
     if(currentLabel !== ''  && activeFilter){

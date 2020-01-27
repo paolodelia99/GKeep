@@ -29,7 +29,7 @@ import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import Modal from "@material-ui/core/Modal";
 import {dashboardStyle } from './styles/dashboardStyle';
-import {green, yellow} from "@material-ui/core/colors";
+import {yellow} from "@material-ui/core/colors";
 
 const DashBoard = ({getLabels,addLabel,deleteLabel,setFilterActive,setFilterUnActive, labels: {labels, isLoading} }) => {
     useEffect(()=> {

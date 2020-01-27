@@ -2,12 +2,9 @@ import React, {useState} from 'react';
 import {
     Box,
     Button,
-    Menu,
-    MenuItem,
     Icon,
     Grid
 } from "@material-ui/core";
-import { green } from '@material-ui/core/colors';
 import {editNote, deleteNote} from "../../actions/notes";
 import PropTypes from "prop-types";
 import { connect } from 'react-redux';
@@ -91,12 +88,10 @@ const Note = ({deleteNote,editNote, note, labels:{labels}}) => {
     const handleClose = () => {
         const {_id} = note;
         if(selectedDate !== null){
-            console.log(selectedDate)
             noteData.reminder = selectedDate;
         }
         noteData.isCheckList = checkList;
         noteData.color = bgcolor;
-        console.log(noteData)
         editNote(_id,noteData);
         setOpen(false);
     };
