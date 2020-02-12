@@ -9,7 +9,7 @@ https://damp-fjord-04834.herokuapp.com/
 <br/>
 <br/>
 
-## Quick Start: how to instal it
+## Quick Start: how to install it
 
 ```bash
 # Install server dependencies
@@ -27,7 +27,7 @@ cd client
 npm run build
 ```
 
-```
+```bash
 # change .env file in config folder
 
 # add uri of your mongodb connection for example
@@ -87,7 +87,7 @@ The Backend structure is pretty simple:
 - in the model folder I've made the Schemas for the note and the label
 
 Label:
-```
+```javascript
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -102,7 +102,7 @@ module.exports = Label = mongoose.model('labels',LabelSchema);
 ```
 
 Note:
-```
+```javascript
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -137,7 +137,7 @@ module.exports = Note = mongoose.model('notes',NoteSchema)
 - in the api folder (inside the routes folder) I've made all the apis that I need to have: 
 
 notes.js
-```
+```javascript
     const express = require('express');
     const router = express.Router();
     
@@ -241,7 +241,7 @@ notes.js
 
 label.js
 
-```
+```javascript
     const express = require('express');
     const router = express.Router();
     
@@ -321,7 +321,7 @@ label.js
 
 - the server.js file 
 
-```
+```javascript
     const express = require('express');
     const mongoose = require('mongoose');
     const path = require('path');
