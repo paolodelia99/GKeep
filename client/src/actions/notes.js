@@ -2,7 +2,8 @@ import axios from 'axios';
 import {
     GET_NOTES,
     ADD_NOTE,
-    DELETE_NOTE, EDIT_NOTE,
+    DELETE_NOTE,
+    EDIT_NOTE,
     SET_FILTER_ACTIVE,
     SET_FILTER_UNACTIVE
 } from "./types";

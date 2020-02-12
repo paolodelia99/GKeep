@@ -2,7 +2,9 @@ import {
     ADD_NOTE,
     GET_NOTES,
     DELETE_NOTE,
-    EDIT_NOTE, SET_FILTER_ACTIVE, SET_FILTER_UNACTIVE,
+    EDIT_NOTE,
+    SET_FILTER_ACTIVE,
+    SET_FILTER_UNACTIVE,
 } from "../actions/types";
 
 const initState = {

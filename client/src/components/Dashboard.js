@@ -112,7 +112,7 @@ const DashBoard = ({getLabels,addLabel,deleteLabel,setFilterActive,setFilterUnAc
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" noWrap>
+                    <Typography variant="h6" noWrap onClick={() => unSetFilter()}>
                         <Icon style={{ color: yellow[700] }}>lightbulb</Icon>  GKeep
                     </Typography>
                 </Toolbar>
