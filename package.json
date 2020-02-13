@@ -13,7 +13,7 @@
   },
   "keywords": [],
   "author": "Paolo",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "concurrently": "^5.0.2",
     "config": "^3.2.5",

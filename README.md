@@ -45,6 +45,7 @@ npm run build
 # App Info
 
 Tools that I've used to build this app:
+
 - [Mongodb](https://www.mongodb.com/) - as database
 - [React](https://reactjs.org/) - for the front-end
 - [Express](https://expressjs.com/) - as a back-end framework
