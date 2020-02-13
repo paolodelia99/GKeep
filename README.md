@@ -9,6 +9,12 @@ https://damp-fjord-04834.herokuapp.com/
 <br/>
 <br/>
 
+## Disclaimer
+
+Since I'm a junior SWE, don't expect my code to be perfect! I know that I can optimize a lot,
+but that is just one of my first "big project", and I've tried to do my best with the skill 
+that I've had back when I was starting working on this project.  So please be understanding.
+
 ## Quick Start: how to install it
 
 ```bash
@@ -386,6 +392,7 @@ For the client folder structure I've done in this way:
     │       ├── AddNoteForm.js
     │       ├── NoteMenu.js
     │       ├── NotesContainer.js
+    │       ├── SearchBar.js
     │       └── DashBoard.js
     ├── reducers
     ├── App.ccs
@@ -395,10 +402,510 @@ For the client folder structure I've done in this way:
     └── store.js
 ```
 
+The App.js is a functional component and is the js file that will render, is pretty simple:
+
+```javascript
+    import React from 'react';
+    import './App.css';
+    import DashBoard from "./components/Dashboard";
+    
+    import {Provider} from 'react-redux';
+    import store from "./store";
+    
+    function App() {
+      return (
+          <Provider store={store}>
+              <div className="App">
+                  <DashBoard/>
+              </div>
+          </Provider>
+      );
+    }
+    
+    export default App;
+```
+
+As you can see Its contains just one component <em>DashBoard</em> which is the main component that contains tha AppBar, the 
+Drawer and the NotesContainer. In order for redux to work I've wrapped up the main app div with the <em>Provider</em> component from 'react-redux'.
+I'll talk about how I went with Redux in the next section.
+<br/>
+The DashBoard component is a  pretty big stateless component( I know I have to do some cleaning ), which contains the AppBar component ( a Material UI component),
+the Drawer component ( another Material UI component ) and main section contains the NotesContainer component. 
+
+For handling all the events in the DashBoard I've used hooks.
+
+The <b>AppBar</b> contains the menuItem that triggers the drawer the log and the search bar
+```javascript
+            <AppBar
+                position="fixed"
+                className={clsx(classes.appBar, {
+                    [classes.appBarShift]: open,
+                })}
+                bgcolor="text.secondary"
+            >
+                <Toolbar>
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={handleDrawerOpen}
+                        edge="start"
+                        className={clsx(classes.menuButton, open && classes.hide)}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography variant="h6" noWrap onClick={() => unSetFilter()}>
+                        <Icon style={{ color: yellow[700] }}>lightbulb</Icon>  GKeep
+                    </Typography>
+                    <div className={classes.search}>
+                        <SearchBar/>
+                    </div>
+                </Toolbar>
+            </AppBar>
+```
+
+While the <b>Drawer</b> contains the note and reminder listItem, one listItem for label, the Menu for adding a new 
+Label and the modal for edit/remove a label
+
+```javascript
+      <Drawer
+                    className={classes.drawer}
+                    variant="persistent"
+                    anchor="left"
+                    open={open}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div className={classes.drawerHeader}>
+                        <IconButton onClick={handleDrawerClose}>
+                            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                        </IconButton>
+                    </div>
+                    <Divider />
+                    <List>
+                        <ListItem button onClick={unSetFilter} className={classes.sideBarItem}>
+                            <ListItemIcon><Icon>lightbulb</Icon></ListItemIcon>
+                            <ListItemText primary="Notes" />
+                        </ListItem>
+                        <ListItem button onClick={ e => setFilter('reminders')} className={classes.sideBarItem}>
+                            <ListItemIcon><Icon>notifications_none</Icon></ListItemIcon>
+                            <ListItemText primary="Reminders" />
+                        </ListItem>
+                    </List>
+                    <Divider />
+                    <List>
+                        {labels.map(label => (
+                            <ListItem
+                                button
+                                key={label._id}
+                                onClick={ e => setFilter(label.labelName)}
+                                className={classes.sideBarItem}
+                            >
+                                <ListItemIcon><Icon>label</Icon></ListItemIcon>
+                                <ListItemText primary={label.labelName}/>
+                            </ListItem>
+                        ))}
+                    </List>
+                    <Divider/>
+                    <List>
+                        <ListItem button onClick={handleOpenAddLabelMenu} className={classes.sideBarItem}>
+                            <ListItemIcon >
+                                <Icon>add</Icon>
+                            </ListItemIcon>
+                            <ListItemText primary="Add new Label"/>
+                        </ListItem>
+                        <Menu
+                            id="add-label-menu"
+                            anchorEl={anchorMenuAddLabel}
+                            keepMounted
+                            open={Boolean(anchorMenuAddLabel)}
+                            onClose={handleCloseAddLabelMenu}
+                            style={{
+                                padding: '3px'
+                            }}
+                        >
+                            <TextField
+                                margin="normal"
+                                autoFocus
+                                type="text"
+                                name="labelName"
+                                id="newLabel-TextField"
+                                value={labelName}
+                                placeholder="The new Label"
+                                onChange={e => setNewLabelName(e.target.value)}
+                                required
+                            />
+                            <Grid
+                                container
+                                alignItems="flex-start"
+                                justify="space-around"
+                            >
+                                <Grid item xs={5}>
+                                    <Button onClick={handleCloseAddLabelMenu}>
+                                        Close
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={5}>
+                                    <Button onClick={addNewLabel}>
+                                        Add Label
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </Menu>
+                        <ListItem button onClick={setOpenEditModal} className={classes.sideBarItem}>
+                            <ListItemIcon >
+                                <Icon>create</Icon>
+                            </ListItemIcon>
+                            <ListItemText primary="Edit Labels"/>
+                        </ListItem>
+                        <Modal
+                            aria-labelledby="transition-modal-title"
+                            aria-describedby="transition-modal-description"
+                            className={classes.modal}
+                            open={openEditLab}
+                            onClose={setCloseEditModal}
+                            closeAfterTransition
+                            BackdropComponent={Backdrop}
+                            BackdropProps={{
+                                timeout: 500,
+                            }}
+                        >
+                            <Fade in={openEditLab}>
+                                <div className={classes.paper}>
+                                    <List>
+                                        {labels.map(label => (
+                                            <ListItem key={label._id} button onClick={ e => deleteSelectedLabel(label._id)}>
+                                                <ListItemIcon><Icon>delete</Icon></ListItemIcon>
+                                                <ListItemText primary={label.labelName}/>
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                </div>
+                            </Fade>
+                        </Modal>
+                    </List>
+                </Drawer>
+```
+
+The main section contains the NoteContainer component:
+
+```javascript
+            <main
+                    className={clsx(classes.content, {
+                        [classes.contentShift]: open,
+                    })}
+                >
+                    <NotesContainer/>
+            </main>
+```
+
+The <b>NotesContainer</b> is a stateless component and is responsible for filter and the displaying the notes.
+Its also containes the note form for creating a new note
+
+```javascript
+const NotesContainer = ({getNotes,notes:{
+    notes,
+    isLoading,
+    activeFilter,
+    currentLabel,
+    keywordFilter,
+    keyword
+}}) =>{
+    useEffect( ()=> {
+        getNotes()
+    },[getNotes]);
+
+    const notesList = notes.map(note => (
+           <Note note={note} key={note._id}/>
+    ));
+
+    let filterNotes;
+    let filteredNoteList;
+    if(currentLabel !== ''  && activeFilter){
+        if(currentLabel === 'reminders')
+            filterNotes = notes.filter(note => note.reminder !== null);
+        else
+            filterNotes = notes.filter(note => note.label === currentLabel);
+
+        filteredNoteList = filterNotes.length ? filterNotes.map(note => (
+            <Note note={note} key={note._id}/>
+        )): null
+    }else if(!activeFilter && keywordFilter){
+           if(keyword === '')
+               filteredNoteList = notesList
+           else{
+               filterNotes = notes.filter(note => note.noteContent.includes(keyword) || note.noteTitle.includes(keyword))
+               filteredNoteList = filterNotes.length ? filterNotes.map(note => (
+                   <Note note={note} key={note._id}/>
+               )): null
+           }
+    }else
+        filteredNoteList = null;
+
+    return isLoading ? (
+        <div className="loading-div">
+            <CircularProgress color="primary" className="loading-gif"/>
+        </div>
+    ): (
+            <div className="big-notes-wrapper">
+                <Grid container
+                      direction="row"
+                      justify="center"
+                      alignItems="center"
+                      className="big-form-wrapper">
+                    <Grid>
+                        <AddNoteForm/>
+                    </Grid>
+                </Grid>
+                <div className="notes-container">
+                    {activeFilter || keywordFilter ? filteredNoteList : notesList}
+                </div>
+            </div>
+    );
+}
+
+NotesContainer.protoTypes ={
+    notes: PropTypes.object.isRequired,
+    getNotes: PropTypes.func.isRequired
+};
+
+const mapStateToProps = state =>({
+    notes: state.notes
+});
+
+export default connect(mapStateToProps,{getNotes})(NotesContainer);
+```
+
+The Note component, in turn, contains the <b>NotesItem</b>, responsible for displaying the note title content and so on, and <b>Modal</b> 
+that allow the user to edit the node.
+
+
 ## Redux
 
+Redux it'a all about reducers, so let's talk about them.
+
+In the reducer folder inside the client folder, I've made 
+three reducers: the noteReducer, the labelReducer and the rootReducer.
+
+The <b>Label reducer</b> is pretty simple and straightforward: the inital state contains and array <em>labels</em> that stores all
+the labels, and a boolean isLoading. The actions type are pretty intuitive, ADD_LABEL,GET_LABELS and DELETE_LABEL
+
+```javascript
+import {
+    ADD_LABEL,
+    GET_LABELS,
+    DELETE_LABEL
+} from "../actions/types";
+
+const initState = {
+    labels:[],
+    isLoading: true
+};
+
+export default function (state = initState,action) {
+    const {type, payload} = action;
+
+    switch (type) {
+        case GET_LABELS:
+            return{
+                ...state,
+                labels: payload,
+                isLoading: false
+            }
+        case ADD_LABEL:
+            return {
+                ...state,
+                labels: [ payload, ...state.labels],
+                isLoading: false
+            }
+        case DELETE_LABEL:
+            return {
+                ...state,
+                labels: state.labels.filter(label => label._id !== payload),
+                isLoading: false
+            }
+        default:
+            return state
+    }
+}
+```
+
+While the <b>noteReducer</b> is little bit more complex than the labelReducer. Of course the initial state contains an 
+array notes, which stores all the note, and a boolean isLoading, but what is make more complex are: <em>activeFilter</em>,
+<em>currentLabel</em>, <em>keywordFilter</em> and <em>keyword</em>. 
+ 
+<em>activeFilter</em> and <em>currentLabel</em> are the selectors that filter the notes when a label on the drawer is clicked.
+
+While the <em>keywordFilter</em> and <em>keyword</em> are the selectors that filter the notes when a keyword on the search bar is typed
+
+```javascript
+
+import {
+    ADD_NOTE,
+    GET_NOTES,
+    DELETE_NOTE,
+    EDIT_NOTE,
+    SET_FILTER_ACTIVE,
+    SET_FILTER_UNACTIVE,
+    SET_KEYWORD_FILTER,
+    REMOVE_KEYWORD_FILTER
+} from "../actions/types";
+
+const initState = {
+    notes:[],
+    isLoading: true,
+    activeFilter: false,
+    currentLabel: '',
+    keywordFilter: false,
+    keyword: ''
+};
+
+export default function (state = initState,action) {
+    const {type, payload} = action;
+
+    switch (type) {
+        case GET_NOTES:
+            return{
+                ...state,
+                notes: payload,
+                isLoading: false
+            };
+        case ADD_NOTE:
+            return {
+                ...state,
+                notes: [ payload, ...state.notes],
+                isLoading: false
+            };
+        case EDIT_NOTE:
+            return {
+                ...state,
+                notes: state.notes.map(note => note._id === payload._id ?
+                    {
+                        ...note,
+                        noteTitle: payload.noteTitle,
+                        noteContent: payload.noteContent,
+                        label: payload.label,
+                        reminder: payload.reminder,
+                        isCheckList: payload.isCheckList,
+                        color: payload.color
+                    }: note)
+            };
+        case SET_FILTER_ACTIVE:
+            if(payload === 'reminders')
+                return {
+                    ...state,
+                    isLoading: false,
+                    activeFilter: true,
+                    keywordFilter: false,
+                    keyword: '',
+                    currentLabel: payload,
+                };
+            return{
+                ...state,
+                isLoading: false,
+                activeFilter: true,
+                keywordFilter: false,
+                keyword: '',
+                currentLabel: payload,
+            };
+        case SET_FILTER_UNACTIVE:
+            return {
+                ...state,
+                isLoading: false,
+                activeFilter: false,
+                currentLabel: '',
+            };
+        case DELETE_NOTE:
+            return {
+                ...state,
+                notes: state.notes.filter(note => note._id !== payload),
+                isLoading: false
+            };
+        case SET_KEYWORD_FILTER:
+            return {
+                ...state,
+                keywordFilter: true,
+                activeFilter: false,
+                currentLabel: '',
+                keyword: payload
+            };
+        case REMOVE_KEYWORD_FILTER:
+            return {
+                ...state,
+                keywordFilter: false,
+                keyword: ''
+            }
+        default:
+            return state
+    }
+}
+```
+
+All the filtered work is made by the <b>NotesContainer</b>: 
+```javascript
+ const notesList = notes.map(note => (
+           <Note note={note} key={note._id}/>
+    ));
+
+    let filterNotes;
+    let filteredNoteList;
+    if(currentLabel !== ''  && activeFilter){
+        if(currentLabel === 'reminders')
+            filterNotes = notes.filter(note => note.reminder !== null);
+        else
+            filterNotes = notes.filter(note => note.label === currentLabel);
+
+        filteredNoteList = filterNotes.length ? filterNotes.map(note => (
+            <Note note={note} key={note._id}/>
+        )): null
+    }else if(!activeFilter && keywordFilter){
+           if(keyword === '')
+               filteredNoteList = notesList
+           else{
+               filterNotes = notes.filter(note => note.noteContent.includes(keyword) || note.noteTitle.includes(keyword))
+               filteredNoteList = filterNotes.length ? filterNotes.map(note => (
+                   <Note note={note} key={note._id}/>
+               )): null
+           }
+    }else
+        filteredNoteList = null;
+```
+
+If you know redux, you know that we need a rootReducer for combining the noteReducer and the labelReducer.
+Here it is!
+
+```javascript
+import { combineReducers} from "redux";
+import notes from './notesReducer';
+import labels from './labelReducer';
+
+export default combineReducers({
+    notes,
+    labels
+})
+```
+
 ## UI 
-..to finish
+
+As I said in the beginnig for the styling part I've used the Material UI Framework that gives 
+me a to prebuild and prestyled components ready to use.
+
+For make the code more cleaner I've separeted the style code for the material UI component and another 
+folder in the components folder called <em>styles</em>.
+
+I structured these JS files in the following way:
+
+```javascript
+import { makeStyles } from "@material-ui/core";
+
+export const componentStyle = makeStyles(theme =>({
+    classname:{
+       style: 
+    },
+}));
+```
+
+And I've kept my own style in App.css
 
 ### Author
 
