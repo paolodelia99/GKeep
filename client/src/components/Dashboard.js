@@ -30,6 +30,7 @@ import Fade from "@material-ui/core/Fade";
 import Modal from "@material-ui/core/Modal";
 import {dashboardStyle } from './styles/dashboardStyle';
 import {yellow} from "@material-ui/core/colors";
+import SearchBar from "./SearchBar";
 
 const DashBoard = ({getLabels,addLabel,deleteLabel,setFilterActive,setFilterUnActive, labels: {labels, isLoading} }) => {
     useEffect(()=> {
@@ -115,6 +116,9 @@ const DashBoard = ({getLabels,addLabel,deleteLabel,setFilterActive,setFilterUnAc
                     <Typography variant="h6" noWrap onClick={() => unSetFilter()}>
                         <Icon style={{ color: yellow[700] }}>lightbulb</Icon>  GKeep
                     </Typography>
+                    <div className={classes.search}>
+                        <SearchBar/>
+                    </div>
                 </Toolbar>
             </AppBar>
             <Drawer

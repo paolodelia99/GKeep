@@ -75,5 +75,20 @@ export const dashboardStyle = makeStyles(theme => ({
         "&:hover":{
             backgroundColor: yellow[600]
         }
+    },
+    search: {
+        positon: 'relative',
+        width: '30%',
+        [theme.breakpoints.up('md')]: {
+            marginLeft: theme.spacing(3),
+        },
+        [theme.breakpoints.down('md')]: {
+            marginLeft: theme.spacing(2),
+            width: '50%',
+        },
+        [theme.breakpoints.down('sm')]: {
+            marginLeft: theme.spacing(4),
+            width: '50%',
+        },
     }
 }));

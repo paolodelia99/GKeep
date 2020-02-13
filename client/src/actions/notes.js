@@ -5,7 +5,9 @@ import {
     DELETE_NOTE,
     EDIT_NOTE,
     SET_FILTER_ACTIVE,
-    SET_FILTER_UNACTIVE
+    SET_FILTER_UNACTIVE,
+    SET_KEYWORD_FILTER,
+    REMOVE_KEYWORD_FILTER
 } from "./types";
 
 //Get notes
@@ -89,5 +91,18 @@ export const setFilterActive = (label) => dispatch => {
 export const setFilterUnActive = () => dispatch => {
     dispatch({
         type: SET_FILTER_UNACTIVE
+    })
+};
+
+export const setKeyWordFilter = (keyword) => dispatch => {
+    dispatch({
+        type: SET_KEYWORD_FILTER,
+        payload: keyword
+    })
+}
+
+export const removeKeywordFilter = (keyword) => dispatch => {
+    dispatch({
+        type: REMOVE_KEYWORD_FILTER
     })
 }

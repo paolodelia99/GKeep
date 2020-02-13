@@ -7,7 +7,14 @@ import Note from "./note/Note";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import {Grid} from "@material-ui/core";
 
-const NotesContainer = ({getNotes,notes:{notes, isLoading, activeFilter,currentLabel}}) =>{
+const NotesContainer = ({getNotes,notes:{
+    notes,
+    isLoading,
+    activeFilter,
+    currentLabel,
+    keywordFilter,
+    keyword
+}}) =>{
     useEffect( ()=> {
         getNotes()
     },[getNotes]);
@@ -27,6 +34,15 @@ const NotesContainer = ({getNotes,notes:{notes, isLoading, activeFilter,currentL
         filteredNoteList = filterNotes.length ? filterNotes.map(note => (
             <Note note={note} key={note._id}/>
         )): null
+    }else if(!activeFilter && keywordFilter){
+           if(keyword === '')
+               filteredNoteList = notesList
+           else{
+               filterNotes = notes.filter(note => note.noteContent.includes(keyword) || note.noteTitle.includes(keyword))
+               filteredNoteList = filterNotes.length ? filterNotes.map(note => (
+                   <Note note={note} key={note._id}/>
+               )): null
+           }
     }else
         filteredNoteList = null;
 
@@ -46,7 +62,7 @@ const NotesContainer = ({getNotes,notes:{notes, isLoading, activeFilter,currentL
                     </Grid>
                 </Grid>
                 <div className="notes-container">
-                    {activeFilter ? filteredNoteList : notesList}
+                    {activeFilter || keywordFilter ? filteredNoteList : notesList}
                 </div>
             </div>
     );
